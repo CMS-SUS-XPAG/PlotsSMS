@@ -1,0 +1,37 @@
+To run the code
+
+1) prepare your python environment to use ROOT
+You can just do cmsenv from a CMSSW directory or
+export ROOTSYS=/usr/ROOT/root
+export LD_LIBRARY_PATH=$ROOTSYS/lib:$PYTHONDIR/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH
+export PATH=${PATH}:${ROOTSYS}/bin
+
+
+2) prepare a root file with the 2D histogram (temperature plot) and the six lines to display:
+- observed limit 
+- observed limt +/- 1 sigma on the theory xsec
+- expected limit
+- expected limit +/- 1 sigma
+
+3) prepare a config file similar to the example provided (see config/SUS12024/T1tttt_SUS12024.cfg)
+
+Run the code as
+
+python python/makeSMSplots.py yourconffile labeloutput
+where
+- yourconffile is the relative or absolute path to your conf file
+- is the label for the output plots. 
+
+e.g.
+
+python python/makeSMSplots.py config/SUS12024/T1tttt_SUS12024.cfg T1ttttRA2b
+
+would create three plots
+
+T1ttttRA2bBAND.pdf   <-- plot with 1 sigma band (Brazilian-like plots)	
+T1ttttRA2bCONT.pdf   <-- plot with color contour	 
+T1ttttRA2bXSEC.pdf   <-- temperature plot
+
+
+
