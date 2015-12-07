@@ -94,7 +94,7 @@ class smsPlotABS(object):
         textCMS = rt.TLatex(0.25,0.98,"  %s " %(self.preliminary))
         textCMS.SetNDC()
         textCMS.SetTextAlign(13)
-        textCMS.SetTextFont(42)
+        textCMS.SetTextFont(52)
         textCMS.SetTextSize(0.038)
         textCMS.Draw()
         self.c.textCMS = textCMS
