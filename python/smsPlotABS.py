@@ -2,7 +2,7 @@ import ROOT as rt
 from array import *
 from sms import *
 from color import *
-
+import CMS_lumi
 class smsPlotABS(object):
     # modelname is the sms name (see sms.py)
     # histo is the 2D xsec map
@@ -47,7 +47,7 @@ class smsPlotABS(object):
 
         # set x axis
         self.emptyHisto.GetXaxis().SetLabelFont(42)
-        self.emptyHisto.GetXaxis().SetLabelSize(0.04)
+        self.emptyHisto.GetXaxis().SetLabelSize(0.035)
         self.emptyHisto.GetXaxis().SetTitleFont(42)
         self.emptyHisto.GetXaxis().SetTitleSize(0.05)
         self.emptyHisto.GetXaxis().SetTitleOffset(1.2)
@@ -56,7 +56,7 @@ class smsPlotABS(object):
 
         # set y axis
         self.emptyHisto.GetYaxis().SetLabelFont(42)
-        self.emptyHisto.GetYaxis().SetLabelSize(0.04)
+        self.emptyHisto.GetYaxis().SetLabelSize(0.035)
         self.emptyHisto.GetYaxis().SetTitleFont(42)
         self.emptyHisto.GetYaxis().SetTitleSize(0.05)
         self.emptyHisto.GetYaxis().SetTitleOffset(1.35)
@@ -83,21 +83,27 @@ class smsPlotABS(object):
         graphWhite.Draw("FSAME")
         graphWhite.Draw("LSAME")
         self.c.graphWhite = graphWhite
-        
+       	CMS_lumi.writeExtraText = 0
+	CMS_lumi.extraText = "Preliminary"
+	CMS_lumi.lumi_13TeV="2.1 fb^{-1}"
+
+	CMS_lumi.lumi_sqrtS = "13 TeV"  
+	iPos=0
+	CMS_lumi.CMS_lumi(self.c,4, iPos)
         # CMS LABEL
-        textCMS = rt.TLatex(0.22,0.98,"CMS %s, %s fb^{-1}, #sqrt{s} = %s TeV" %(self.preliminary, self.lumi, self.energy))
+        textCMS = rt.TLatex(0.25,0.96,"  %s " %(self.preliminary))
         textCMS.SetNDC()
         textCMS.SetTextAlign(13)
-        textCMS.SetTextFont(42)
+        textCMS.SetTextFont(52)
         textCMS.SetTextSize(0.038)
         textCMS.Draw()
         self.c.textCMS = textCMS
         # MODEL LABEL
-        textModelLabel= rt.TLatex(0.16,0.90,"%s  NLO+NLL exclusion" %self.model.label)
+        textModelLabel= rt.TLatex(0.15,0.90,"%s  NLO+NLL exclusion" %self.model.label)
         textModelLabel.SetNDC()
         textModelLabel.SetTextAlign(13)
         textModelLabel.SetTextFont(42)
-        textModelLabel.SetTextSize(0.040)
+        textModelLabel.SetTextSize(0.035)
         textModelLabel.Draw()
         self.c.textModelLabel = textModelLabel
         # NLO NLL XSEC
@@ -105,7 +111,7 @@ class smsPlotABS(object):
         textNLONLL.SetNDC()
         textNLONLL.SetTextAlign(13)
         textNLONLL.SetTextFont(42)
-        textNLONLL.SetTextSize(0.040)
+        textNLONLL.SetTextSize(0.04)
         textNLONLL.Draw()
         #self.c.textNLONLL = textNLONLL
 
