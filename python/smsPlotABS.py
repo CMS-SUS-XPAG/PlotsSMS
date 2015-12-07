@@ -88,18 +88,18 @@ class smsPlotABS(object):
 	CMS_lumi.lumi_13TeV="2.1 fb^{-1}"
 
 	CMS_lumi.lumi_sqrtS = "13 TeV"  
-	iPos=1
+	iPos=0
 	CMS_lumi.CMS_lumi(self.c,4, iPos)
         # CMS LABEL
-        #textCMS = rt.TLatex(0.22,0.98,"CMS %s, %s fb^{-1}, #sqrt{s} = %s TeV" %(self.preliminary, self.lumi, self.energy))
-        #textCMS.SetNDC()
-        #textCMS.SetTextAlign(13)
-        #textCMS.SetTextFont(42)
-        #textCMS.SetTextSize(0.038)
-        #textCMS.Draw()
-        #self.c.textCMS = textCMS
+        textCMS = rt.TLatex(0.25,0.98,"  %s " %(self.preliminary))
+        textCMS.SetNDC()
+        textCMS.SetTextAlign(13)
+        textCMS.SetTextFont(42)
+        textCMS.SetTextSize(0.038)
+        textCMS.Draw()
+        self.c.textCMS = textCMS
         # MODEL LABEL
-        textModelLabel= rt.TLatex(0.16,0.90,"%s  NLO+NLL exclusion" %self.model.label)
+        textModelLabel= rt.TLatex(0.15,0.90,"%s  NLO+NLL exclusion" %self.model.label)
         textModelLabel.SetNDC()
         textModelLabel.SetTextAlign(13)
         textModelLabel.SetTextFont(42)
