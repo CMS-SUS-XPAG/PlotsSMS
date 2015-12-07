@@ -14,13 +14,13 @@ class sms():
         self.label= "pp #rightarrow #tilde{g} #tilde{g}, #tilde{g} #rightarrow t #bar{t} #tilde{#chi}^{0}_{1}";
         # scan range to plot
         self.Xmin = 600
-        self.Xmax = 1400
+        self.Xmax = 1950
         self.Ymin = 0
-        self.Ymax = 800
+        self.Ymax = 1900
         # produce sparticle
-        self.sParticle = "m_{gluino} (GeV)"
+        self.sParticle = "m_{#tilde{g}} [GeV]"
         # LSP
-        self.LSP = "m_{LSP} (GeV)"        
+        self.LSP = "m_{#tilde{#chi}_{1}^{0}} [GeV]"
         # diagonal position: mLSP = mgluino - 2mtop 
         mW = 80
         self.diagX = array('d',[0,20000])
@@ -37,9 +37,9 @@ class sms():
         self.Ymin = 0
         self.Ymax = 1200
         # produce sparticle
-        self.sParticle = "m_{gluino} (GeV)"
+        self.sParticle = "m_{#tilde{g}} [GeV]"
         # LSP
-        self.LSP = "m_{LSP} (GeV)"
+        self.LSP = "m_{#tilde{#chi}_{1}^{0}} [GeV]"
         # diagonal position: mLSP = mgluino - 2mtop
         self.diagX = array('d',[0,20000])
         self.diagY = array('d',[0, 20000])
