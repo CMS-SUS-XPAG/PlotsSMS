@@ -91,7 +91,7 @@ class smsPlotABS(object):
 	iPos=0
 	CMS_lumi.CMS_lumi(self.c,4, iPos)
         # CMS LABEL
-        textCMS = rt.TLatex(0.25,0.98,"  %s " %(self.preliminary))
+        textCMS = rt.TLatex(0.25,0.96,"  %s " %(self.preliminary))
         textCMS.SetNDC()
         textCMS.SetTextAlign(13)
         textCMS.SetTextFont(52)
