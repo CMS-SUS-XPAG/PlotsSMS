@@ -1,5 +1,6 @@
 import sys
 import ROOT as rt
+rt.gROOT.SetBatch(True)    
 
 class inputFile():
 
