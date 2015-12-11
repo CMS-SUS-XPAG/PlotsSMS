@@ -13,18 +13,18 @@ class sms():
         # decay chain
         self.label= "pp #rightarrow #tilde{g} #tilde{g}, #tilde{g} #rightarrow t #bar{t} #tilde{#chi}^{0}_{1}";
         # scan range to plot
-        self.Xmin = 600
-        self.Xmax = 1950
-        self.Ymin = 0
-        self.Ymax = 1900
+        self.Xmin = 600.
+        self.Xmax = 1950.
+        self.Ymin = 0.
+        self.Ymax = 1800.
+        self.Zmin = 0.002
+        self.Zmax = 3.
         # produce sparticle
         self.sParticle = "m_{#tilde{g}} [GeV]"
         # LSP
         self.LSP = "m_{#tilde{#chi}_{1}^{0}} [GeV]"
-        # diagonal position: mLSP = mgluino - 2mtop 
-        mW = 80
-        self.diagX = array('d',[0,20000])
-        self.diagY = array('d',[-mW, 20000-mW])        
+        # turn off diagonal lines
+        self.diagOn = False
         
     def T1bbbb(self):
         # model name
@@ -32,14 +32,15 @@ class sms():
         # decay chain
         self.label= "pp #rightarrow #tilde{g} #tilde{g}, #tilde{g} #rightarrow b #bar{b} #tilde{#chi}^{0}_{1}";
         # plot boundary. The top 1/4 of the y axis is taken by the legend
-        self.Xmin = 400
-        self.Xmax = 1600
-        self.Ymin = 0
-        self.Ymax = 1200
+        self.Xmin = 600.
+        self.Xmax = 1950.
+        self.Ymin = 0.
+        self.Ymax = 1800.
+        self.Zmin = 0.002
+        self.Zmax = 3.
         # produce sparticle
         self.sParticle = "m_{#tilde{g}} [GeV]"
         # LSP
         self.LSP = "m_{#tilde{#chi}_{1}^{0}} [GeV]"
-        # diagonal position: mLSP = mgluino - 2mtop
-        self.diagX = array('d',[0,20000])
-        self.diagY = array('d',[0, 20000])
+        # turn off diagonal lines
+        self.diagOn = False

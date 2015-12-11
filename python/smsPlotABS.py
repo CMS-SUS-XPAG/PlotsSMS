@@ -59,7 +59,7 @@ class smsPlotABS(object):
         self.emptyHisto.GetYaxis().SetLabelSize(0.035)
         self.emptyHisto.GetYaxis().SetTitleFont(42)
         self.emptyHisto.GetYaxis().SetTitleSize(0.05)
-        self.emptyHisto.GetYaxis().SetTitleOffset(1.35)
+        self.emptyHisto.GetYaxis().SetTitleOffset(1.3)
         self.emptyHisto.GetYaxis().SetTitle(self.model.LSP)
         #self.emptyHisto.GetYaxis().CenterTitle(True)
                 
