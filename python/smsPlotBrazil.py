@@ -26,7 +26,8 @@ class smsPlotBrazil(smsPlotABS):
         self.emptyHisto.GetYaxis().SetRangeUser(self.model.Ymin, self.model.Ymax)
         self.emptyHisto.Draw()
         self.histo.Draw("SAME")
-        self.DrawDiagonal()
+        if self.model.diagOn:
+            self.DrawDiagonal()
         self.DrawLines()
         self.DrawText()
         self.DrawLegend()
