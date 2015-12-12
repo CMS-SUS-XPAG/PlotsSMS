@@ -12,6 +12,7 @@
 #include "TH2D.h"
 #include "TCanvas.h"
 #include "TGraph.h"
+#include "TFile.h"
 
 class model_limits {
 public:
@@ -26,6 +27,7 @@ public:
 void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin);
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax);
 void drawCMSLumi(float lMargin, float tMargin, float rMargin, TString title);
-void setGraph(TGraph *graph, int color, int style, int width, double glu_lsp);
+TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, double glu_lsp);
+void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
 
 #endif
