@@ -1,7 +1,7 @@
-// plot_combine_limits: Plots various limit curves on same canvas
+// plot_limits_summary: Plots various limit curves on same canvas
 
-#ifndef H_PLOT_COMBINED_LIMITS
-#define H_PLOT_COMBINED_LIMITS
+#ifndef H_PLOT_LIMITS_SUMMARY
+#define H_PLOT_LIMITS_SUMMARY
 
 // System includes
 #include <iostream>
@@ -26,7 +26,7 @@ public:
 
 void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin);
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax);
-void drawCMSLumi(float lMargin, float tMargin, float rMargin, TString title);
+void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title);
 TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, double glu_lsp);
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
 

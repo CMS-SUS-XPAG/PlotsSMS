@@ -1,4 +1,4 @@
-//// plot_combine_limits: Plots various limit curves on same canvas
+//// plot_limits_summary: Plots various limit curves on same canvas
 
 // System includes
 #include <fstream>
@@ -14,49 +14,79 @@
 #include "TError.h" // Controls error level reporting
 
 // User includes
-#include "plot_combined_limits.hpp"
+#include "plot_limits_summary.hpp"
 
 using namespace std;
 namespace{
   double cmsH = 0.075;
+  float legLineH = 0.039;
+  float legTextSize = 0.035;
+
+  int c8TeV(kBlack);
+  int cSus15002(kBlue), cSus15003(kOrange), cSus15004(kGreen+1), cSus15005(kMagenta+1);
+  int cSus15007(kRed), cSus15008(kCyan+2);
 }
 
 int main(){
   gErrorIgnoreLevel=kWarning; // Turns off ROOT INFO messages
-  TString folder("root/limits_2015/");
+
+  // Label definitions
   TString lsp("#tilde{#chi}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}");
   TString pp_gluglu("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}");
   TString basetitle(pp_gluglu+",  #tilde{g} #rightarrow ");
   TString mj("M#lower[-.1]{_{J}}");
-  TString mt2("M#lower[-.1]{_{T2}}"), mht("#slash{H}#lower[-.1]{_{T}}"), aT("#alphalower[-.1]{_{T}}");
+  TString mt2("M#lower[-.1]{_{T2}}"), mht("#slash{H}#lower[-.1]{_{T}}"), aT("#alpha#lower[-.1]{_{T}}");
+
+  // Folder with root files containing the TGraphs
+  TString folder("root/limits_2015/");
   vector<model_limits> models;
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
-  // models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
-  // models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 fb^{-1} (8 TeV)", folder+"t1tttt_sus14_010.root", 
-  // 		    kBlack, "T1tttt_SUS14010", "noplot");
-  // models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_002.root", 
-  // 		    kBlue, "ObsLim", "ExpLim");
-  // models.back().add("SUS-15-003, 0-lep ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_003.root", 
-  // 		    kGreen+2, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.1 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_007.root", 
-  // 		    kOrange+2, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  // models.back().add("SUS-15-008, 2-lep (SS), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_008.root", 
-  // 		    kMagenta+1, "ssobs", "ssexp");
+  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 fb^{-1} (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+  models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_002.root", 
+  		    cSus15002, "ObsLim", "ExpLim");
+  models.back().add("SUS-15-003, 0-lep ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_003.root", 
+  		    cSus15003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-15-004, 0+1-lep (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004, "Obs_T1tttt_MuMultiJet_EleMultiJet_MultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet_MultiJet");
+  models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.1 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_007.root", 
+  		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-15-008, 2-lep (SS), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
 
   ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
   models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
   models.back().add("SUS-14-011 (Razor), 19.3 fb^{-1} (8 TeV)", folder+"t1bbbb_sus14_011.root", 
-  		    kBlack, "T1bbbb_SUS14011", "noplot");
+  		    c8TeV, "T1bbbb_SUS14011", "noplot");
   models.back().add("SUS-15-002 ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_002.root", 
-  		    kBlue, "ObsLim", "ExpLim");
+  		    cSus15002, "ObsLim", "ExpLim");
   models.back().add("SUS-15-003 ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_003.root", 
-  		    kGreen+2, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-15-005 ("+aT+"), 2.1 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_005.root", 
-  		    kCyan+1, "observed", "expected");
+  		    cSus15003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-15-004 (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004, "Obs_T1bbbb_MultiJet", "Exp_T1bbbb_MultiJet");
+  models.back().add("SUS-15-005 ("+aT+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_005.root", 
+  		    cSus15005, "observed", "expected");
 
 
+  ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
+  models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
+  models.back().add("SUS-13-019 ("+mt2+"), 19.5 fb^{-1} (8 TeV)", folder+"t1qqqq_sus13_019.root", 
+  		    c8TeV, "T1_SUS13019", "noplot");
+  models.back().add("SUS-15-002 ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_002.root", 
+  		    cSus15002, "ObsLim", "ExpLim");
+  models.back().add("SUS-15-003 ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_003.root", 
+  		    cSus15003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-15-004 (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004, "Obs_T1qqqq_MultiJet", "Exp_T1qqqq_MultiJet");
+  models.back().add("SUS-15-005 ("+aT+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_005.root", 
+  		    cSus15005, "observed", "expected");
+
+
+  //////////////////////////////////////////////////////////////////////////////////////// 
   //////////////////////////////////    Making plots    //////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////// 
   
   // Creating canvas
   gStyle->SetOptStat(0);  
@@ -72,12 +102,18 @@ int main(){
   double legX(1-rMargin-0.04), legY(1-tMargin-0.03);
   double legW = 0.2, legH = 0.07;
   TLegend baseleg(legX-legW, legY-legH, legX, legY);
-  baseleg.SetTextSize(0.032); baseleg.SetFillColor(0); 
+  baseleg.SetTextSize(0.034); baseleg.SetFillColor(0); 
   baseleg.SetFillStyle(0); baseleg.SetBorderSize(0);
-  baseleg.AddEntry(&hobs, "Observed");
+  //baseleg.AddEntry(&hobs, "Observed");
   baseleg.AddEntry(&hexp, "Expected");
+  legX = 0.75;
+  TLegend obsleg(legX-legW, legY-legH, legX, legY);
+  obsleg.SetTextSize(0.034); obsleg.SetFillColor(0); 
+  obsleg.SetFillStyle(0); obsleg.SetBorderSize(0);
+  obsleg.AddEntry(&hobs, "Observed");
 
   // Looping over each model
+  cout<<endl;
   for(size_t imodel(0); imodel < models.size(); imodel++){
     model_limits mod(models[imodel]);
 
@@ -87,7 +123,7 @@ int main(){
 
     TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax);
     hbase.Draw();
-    drawCMSLumi(lMargin, tMargin, rMargin, mod.title);
+    addLabelsTitle(lMargin, tMargin, rMargin, mod.title);
 
     // Plotting limits
     size_t ncurves(mod.files.size());
@@ -109,22 +145,22 @@ int main(){
 
     // Drawing legends
     baseleg.Draw();
-    double legSingle = 0.037;
-    legX = lMargin+0.03; legY = 1-tMargin-cmsH-0.04;
+    obsleg.Draw();
+    legX = lMargin+0.03; legY = 1-tMargin-cmsH-0.035;
     legW = 0.13; 
-    legH = legSingle * ncurves;
+    legH = legLineH * ncurves;
     TLegend limleg(legX, legY-legH, legX+legW, legY);
-    limleg.SetTextSize(0.034); limleg.SetFillColor(0); 
+    limleg.SetTextSize(legTextSize); limleg.SetFillColor(0); 
     limleg.SetFillStyle(0); limleg.SetBorderSize(0);
     for(size_t file(0); file < ncurves; file++)
       limleg.AddEntry(obs[file]->GetName(), mod.labels[file], "fl");
     limleg.Draw();
 
-    TString plotname(mod.model+"_comb_limits.pdf");
+    TString plotname(mod.model+"_limits_summary.pdf");
     can.SaveAs(plotname);
-    cout<<endl<<" open "<<plotname<<endl<<endl;
+    cout<<" open "<<plotname<<endl;
   } // Loop over models
-
+  cout<<endl<<endl;
 }
 
 
@@ -143,7 +179,7 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
   // Setting graph style
   graph->SetLineColor(color);
   graph->SetLineStyle(style);
-  int fillcolor(color-4);
+  int fillcolor(color);
   graph->SetFillColor(fillcolor);
   graph->SetFillColorAlpha(fillcolor, 0.15);
   graph->SetFillStyle(1001);
@@ -163,6 +199,15 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
     }
     for(int point(0); point < np; point++)
       graph->SetPoint(point, mglus[point], mlsps[point]);
+  }
+  // Removing points beyond the diagonal
+  for(int point(0); point < np; point++){
+    graph->GetPoint(point, mglu, mlsp);
+    if(mlsp > mglu-glu_lsp){
+      while(point <= graph->GetN()) 
+	graph->RemovePoint(graph->GetN()-1);
+      break;
+    }
   }
   // Finding intersection of line between last 2 points and mlsp = mglu - glu_lsp
   double x1, y1, x2, y2;
@@ -186,14 +231,19 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
 
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   if(model == "T1tttt"){
-    Xmin = 700; Xmax = 1750;
+    Xmin = 600; Xmax = 1950;
     Ymin = 0;   Ymax = 1800;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
-    Xmin = 700; Xmax = 1950;
-    Ymin = 0;   Ymax = 1850;
-    glu_lsp = 0;
+    Xmin = 600; Xmax = 1950;
+    Ymin = 0;   Ymax = 1900;
+    glu_lsp = 25;
+  }    
+  if(model == "T1qqqq"){
+    Xmin = 600; Xmax = 1950;
+    Ymin = 0;   Ymax = 1750;
+    glu_lsp = 25;
   }    
 }
 
@@ -208,7 +258,7 @@ void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float 
   can.SetBottomMargin(bMargin);
 }
 
-void drawCMSLumi(float lMargin, float tMargin, float rMargin, TString title){
+void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   TLatex label; label.SetNDC();  
   // Printing CMS Preliminary
   double offsetx(0.025), ycms(1-tMargin-cmsH);
@@ -218,7 +268,10 @@ void drawCMSLumi(float lMargin, float tMargin, float rMargin, TString title){
   label.DrawLatex(0.27+offsetx, ycms, "Preliminary");
   // Printing top title
   label.SetTextAlign(22); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
-  label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.02, 1-tMargin/2., title);
+  label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05, 1-tMargin/2., title);
+  // Printing date
+  label.SetTextAlign(31); label.SetTextFont(52); label.SetTextSize(0.45*tMargin);
+  label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "Dec 2015");
 }
 
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
