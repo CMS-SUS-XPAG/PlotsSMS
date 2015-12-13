@@ -21,6 +21,7 @@ namespace{
   double cmsH = 0.075;
   float legLineH = 0.039;
   float legTextSize = 0.035;
+  float fillTransparency = 0.08;
 
   int c8TeV(kBlack);
   int cSus15002(kBlue), cSus15003(kOrange), cSus15004(kGreen+1), cSus15005(kMagenta+1);
@@ -181,26 +182,23 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
   graph->SetLineStyle(style);
   int fillcolor(color);
   graph->SetFillColor(fillcolor);
-  graph->SetFillColorAlpha(fillcolor, 0.15);
+  graph->SetFillColorAlpha(fillcolor, fillTransparency);
   graph->SetFillStyle(1001);
   graph->SetLineWidth(width); 
 
-  // Reversing graph if printed towards increasing mgluino
   int np(graph->GetN());
   double mglu, iniglu, endglu, mlsp;
   graph->GetPoint(0, iniglu, mlsp);
   graph->GetPoint(np-1, endglu, mlsp);
-  if(iniglu < endglu){
-    vector<double> mglus, mlsps;
-    for(int point(np-1); point >= 0; point--){
-      graph->GetPoint(point, mglu, mlsp);
-      mglus.push_back(mglu);
-      mlsps.push_back(mlsp);
-    }
-    for(int point(0); point < np; point++)
-      graph->SetPoint(point, mglus[point], mlsps[point]);
-  }
-  // Removing points beyond the diagonal
+  // Reversing graph if printed towards decreasing mgluino
+  if(iniglu > endglu) reverseGraph(graph);
+  // Adding a point so that it goes down to mLSP = 0
+  graph->SetPoint(graph->GetN(), max(iniglu,endglu), 0);
+  np++;
+
+  reverseGraph(graph);
+
+  // Adding a point at LSP = 0, and removing points beyond the diagonal
   for(int point(0); point < np; point++){
     graph->GetPoint(point, mglu, mlsp);
     if(mlsp > mglu-glu_lsp){
@@ -227,6 +225,19 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
     }
   }
   return graph;
+}
+
+void reverseGraph(TGraph *graph){
+  int np(graph->GetN());
+  double mglu, mlsp;
+  vector<double> mglus, mlsps;
+  for(int point(np-1); point >= 0; point--){
+    graph->GetPoint(point, mglu, mlsp);
+    mglus.push_back(mglu);
+    mlsps.push_back(mlsp);
+  }
+  for(int point(0); point < np; point++)
+    graph->SetPoint(point, mglus[point], mlsps[point]);
 }
 
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
