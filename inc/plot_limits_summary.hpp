@@ -27,7 +27,9 @@ public:
 void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin);
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax);
 void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title);
-TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, double glu_lsp);
+TGraph* getGraph(TFile &flimit, TString gname);
+void setGraphStyle(TGraph *graph, int color, int style, int width, double glu_lsp);
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
+void reverseGraph(TGraph *graph);
 
 #endif

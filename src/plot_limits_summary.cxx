@@ -21,10 +21,11 @@ namespace{
   double cmsH = 0.075;
   float legLineH = 0.039;
   float legTextSize = 0.035;
+  float fillTransparency = 0.08;
 
-  int c8TeV(kBlack);
+  int c8TeV(kGray+2);
   int cSus15002(kBlue), cSus15003(kOrange), cSus15004(kGreen+1), cSus15005(kMagenta+1);
-  int cSus15007(kRed), cSus15008(kCyan+2);
+  int cSus15004_1l(kBlack), cSus15007(kRed), cSus15008(kCyan+2);
 }
 
 int main(){
@@ -43,23 +44,23 @@ int main(){
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
-  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 fb^{-1} (8 TeV)", folder+"t1tttt_sus14_010.root", 
-  		    c8TeV, "T1tttt_SUS14010", "noplot");
   models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_002.root", 
   		    cSus15002, "ObsLim", "ExpLim");
   models.back().add("SUS-15-003, 0-lep ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_003.root", 
   		    cSus15003, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-15-004, 0+1-lep (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
-  		    cSus15004, "Obs_T1tttt_MuMultiJet_EleMultiJet_MultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet_MultiJet");
+  models.back().add("SUS-15-004, 0-lep (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004, "Obs_T1tttt_MultiJet", "Exp_T1tttt_MultiJet");
+  models.back().add("SUS-15-004, 1-lep (Razor), 2.1 fb^{-1} (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
   models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.1 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_007.root", 
   		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-15-008, 2-lep (SS), 2.2 fb^{-1} (13 TeV)", folder+"t1tttt_sus15_008.root", 
   		    cSus15008, "ssobs", "ssexp");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 fb^{-1} (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
 
   ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
   models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-14-011 (Razor), 19.3 fb^{-1} (8 TeV)", folder+"t1bbbb_sus14_011.root", 
-  		    c8TeV, "T1bbbb_SUS14011", "noplot");
   models.back().add("SUS-15-002 ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_002.root", 
   		    cSus15002, "ObsLim", "ExpLim");
   models.back().add("SUS-15-003 ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_003.root", 
@@ -68,12 +69,12 @@ int main(){
   		    cSus15004, "Obs_T1bbbb_MultiJet", "Exp_T1bbbb_MultiJet");
   models.back().add("SUS-15-005 ("+aT+"), 2.2 fb^{-1} (13 TeV)", folder+"t1bbbb_sus15_005.root", 
   		    cSus15005, "observed", "expected");
+  models.back().add("SUS-14-011 (Razor), 19.3 fb^{-1} (8 TeV)", folder+"t1bbbb_sus14_011.root", 
+  		    c8TeV, "T1bbbb_SUS14011", "noplot");
 
 
   ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
   models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-13-019 ("+mt2+"), 19.5 fb^{-1} (8 TeV)", folder+"t1qqqq_sus13_019.root", 
-  		    c8TeV, "T1_SUS13019", "noplot");
   models.back().add("SUS-15-002 ("+mht+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_002.root", 
   		    cSus15002, "ObsLim", "ExpLim");
   models.back().add("SUS-15-003 ("+mt2+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_003.root", 
@@ -82,6 +83,8 @@ int main(){
   		    cSus15004, "Obs_T1qqqq_MultiJet", "Exp_T1qqqq_MultiJet");
   models.back().add("SUS-15-005 ("+aT+"), 2.2 fb^{-1} (13 TeV)", folder+"t1qqqq_sus15_005.root", 
   		    cSus15005, "observed", "expected");
+  models.back().add("SUS-13-019 ("+mt2+"), 19.5 fb^{-1} (8 TeV)", folder+"t1qqqq_sus13_019.root", 
+  		    c8TeV, "T1_SUS13019", "noplot");
 
 
   //////////////////////////////////////////////////////////////////////////////////////// 
@@ -128,10 +131,15 @@ int main(){
     // Plotting limits
     size_t ncurves(mod.files.size());
     vector<TGraph*> obs(ncurves, 0), exp(ncurves, 0);
+    // Getting all graphs first because the ones that come from TCanvas mess up the colors
     for(size_t file(0); file < ncurves; file++){
       TFile flimit(mod.files[file]);
-      exp[file] = setGraph(flimit, mod.expnames[file], mod.colors[file], 2, wexp, glu_lsp);
-      obs[file] = setGraph(flimit, mod.obsnames[file], mod.colors[file], 1, wobs, glu_lsp);
+      exp[file] = getGraph(flimit, mod.expnames[file]);
+      obs[file] = getGraph(flimit, mod.obsnames[file]);
+    }
+    for(size_t file(0); file < ncurves; file++){
+      setGraphStyle(exp[file], mod.colors[file], 2, wexp, glu_lsp);
+      setGraphStyle(obs[file], mod.colors[file], 1, wobs, glu_lsp);
       obs[file]->Draw("f same");
 
       TString obsname("obs"); obsname += imodel; obsname += file;
@@ -156,7 +164,7 @@ int main(){
       limleg.AddEntry(obs[file]->GetName(), mod.labels[file], "fl");
     limleg.Draw();
 
-    TString plotname(mod.model+"_limits_summary.pdf");
+    TString plotname(mod.model+"_limits_summary_cms.pdf");
     can.SaveAs(plotname);
     cout<<" open "<<plotname<<endl;
   } // Loop over models
@@ -164,7 +172,7 @@ int main(){
 }
 
 
-TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, double glu_lsp){
+TGraph* getGraph(TFile &flimit, TString gname){
   TGraph *graph = static_cast<TGraph*>(flimit.Get(gname));
   // If the TGraph is not directly provided in the root file, try to extract it from a TCanvas
   if(graph==0) {
@@ -175,32 +183,34 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
     graph = static_cast<TGraph*>(c1->GetListOfPrimitives()->FindObject(gname));
     if(graph==0) return 0;
   }
-  
+  return graph;
+}
+
+void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_lsp){
+  if(graph==0) return;
+
   // Setting graph style
   graph->SetLineColor(color);
   graph->SetLineStyle(style);
   int fillcolor(color);
   graph->SetFillColor(fillcolor);
-  graph->SetFillColorAlpha(fillcolor, 0.15);
+  graph->SetFillColorAlpha(fillcolor, fillTransparency);
   graph->SetFillStyle(1001);
   graph->SetLineWidth(width); 
 
-  // Reversing graph if printed towards increasing mgluino
   int np(graph->GetN());
   double mglu, iniglu, endglu, mlsp;
   graph->GetPoint(0, iniglu, mlsp);
   graph->GetPoint(np-1, endglu, mlsp);
-  if(iniglu < endglu){
-    vector<double> mglus, mlsps;
-    for(int point(np-1); point >= 0; point--){
-      graph->GetPoint(point, mglu, mlsp);
-      mglus.push_back(mglu);
-      mlsps.push_back(mlsp);
-    }
-    for(int point(0); point < np; point++)
-      graph->SetPoint(point, mglus[point], mlsps[point]);
-  }
-  // Removing points beyond the diagonal
+  // Reversing graph if printed towards decreasing mgluino
+  if(iniglu > endglu) reverseGraph(graph);
+  // Adding a point so that it goes down to mLSP = 0
+  graph->SetPoint(graph->GetN(), max(iniglu,endglu), 0);
+  np++;
+
+  reverseGraph(graph);
+
+  // Adding a point at LSP = 0, and removing points beyond the diagonal
   for(int point(0); point < np; point++){
     graph->GetPoint(point, mglu, mlsp);
     if(mlsp > mglu-glu_lsp){
@@ -226,18 +236,30 @@ TGraph* setGraph(TFile &flimit, TString gname, int color, int style, int width, 
       //cout<<point<<": "<<mglu<<", "<<mlsp<<endl;
     }
   }
-  return graph;
+}
+
+void reverseGraph(TGraph *graph){
+  int np(graph->GetN());
+  double mglu, mlsp;
+  vector<double> mglus, mlsps;
+  for(int point(np-1); point >= 0; point--){
+    graph->GetPoint(point, mglu, mlsp);
+    mglus.push_back(mglu);
+    mlsps.push_back(mlsp);
+  }
+  for(int point(0); point < np; point++)
+    graph->SetPoint(point, mglus[point], mlsps[point]);
 }
 
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   if(model == "T1tttt"){
     Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1800;
+    Ymin = 0;   Ymax = 1885;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
     Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1900;
+    Ymin = 0;   Ymax = 1885;
     glu_lsp = 25;
   }    
   if(model == "T1qqqq"){
