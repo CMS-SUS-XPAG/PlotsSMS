@@ -8,6 +8,7 @@ from smsPlotABS import *
 class smsPlotBrazil(smsPlotABS):
 
     def __init__(self, modelname, histo, obsLimits, expLimits, energy, lumi, preliminary, label):
+        self.LABEL = label
         self.standardDef(modelname, histo, obsLimits, expLimits, energy, lumi, preliminary)
         # canvas for the plot
         self.c = rt.TCanvas("cBrazil_%s" %label,"cBrazil_%s" %label,600,600)
@@ -17,7 +18,8 @@ class smsPlotBrazil(smsPlotABS):
 
     # empty copy of the existing histogram
     def emptyHistogram(self, h):
-        return rt.TH2D("%sEMPTY" %h['histogram'].GetName(), "%sEMPTY" %h['histogram'].GetTitle(),
+        hname = h['histogram'].GetName()+"EMPTY_"+self.LABEL
+        return rt.TH2D(hname, "%sEMPTY" %h['histogram'].GetTitle(),
                        h['histogram'].GetXaxis().GetNbins(), h['histogram'].GetXaxis().GetXmin(), h['histogram'].GetXaxis().GetXmax(),
                        h['histogram'].GetYaxis().GetNbins(), h['histogram'].GetYaxis().GetXmin(), h['histogram'].GetYaxis().GetXmax())
                                        
