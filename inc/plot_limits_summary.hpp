@@ -17,11 +17,12 @@
 class model_limits {
 public:
   TString model, title;
+  float legScale;
   std::vector<TString> labels, files, obsnames, expnames;
   std::vector<int> colors;
 
   void add(TString label, TString file, int color, TString obsname, TString expname);
-  model_limits(TString imodel, TString ititle);
+  model_limits(TString imodel, TString ititle, float ilegScale=1.);
 };
 
 void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin);
