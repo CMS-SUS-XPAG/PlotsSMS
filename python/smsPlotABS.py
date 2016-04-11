@@ -234,7 +234,7 @@ class smsPlotABS(object):
         self.c.LExpP = LExpP
 
     def DrawDiagonal(self):
-        diagonal = rt.TGraph(3, self.model.diagX, self.model.diagY)
+        diagonal = rt.TGraph(2, array('d',[self.model.Xmin,self.model.Xmax]), array('d',[self.model.Xmin,self.model.Xmax]))
         diagonal.SetName("diagonal")
         diagonal.SetFillColor(rt.kWhite)
         diagonal.SetLineColor(rt.kGray)
