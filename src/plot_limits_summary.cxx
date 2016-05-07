@@ -24,6 +24,8 @@ namespace{
   float fillTransparency = 0.06;
 
   TString lsp = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
+  TString chipm = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{#pm}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
+  TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
   int c8TeV(kGray+2);
   int cSus15002(kBlue), cSus15003(kOrange), cSus15004(kGreen+3), cSus15005(kMagenta+1);
   int cSus15004_1l(kBlack), cSus15006(kGreen+1), cSus15007(kRed), cSus15008(kCyan+1), cSus16003(kOrange+2);;
@@ -38,10 +40,48 @@ int main(){
   TString mj("M#lower[-.1]{_{J}}"), dphi("#Delta#phi");
   TString mt2("M#lower[-.1]{_{T2}}"), mht("H_{#lower[-.4]{T}}^{miss}"), aT("#alpha#lower[-.1]{_{T}}");
   TString ifb("fb#lower[.2]{^{-1}}");
-
+  TLatex labMass; labMass.SetNDC();  
+  labMass.SetTextAlign(33); labMass.SetTextFont(42); 
+ 
   // Folder with root files containing the TGraphs
   TString folder("root/limits_2016/");
   vector<model_limits> models;
+
+  ///////////////////////////////    Defining T5qqqqVV plot    /////////////////////////////////
+  models.push_back(model_limits("T5qqqqVV", basetitle+"q#kern[0.2]{#bar{q}}#kern[0.2]{V}#kern[0.2]{"+lsp+"}"));
+  models.back().labMass = "m_{"+chipm+", "+chi2+"} = 0.5(m_{#lower[-0.12]{#tilde{g}}} + m_{"+lsp+"})";
+  models.back().add("V = W/Z: SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqvv_sus15_002.root", 
+  		    cSus15002, "ObsLim", "ExpLim");
+  models.back().add("V = W: SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqww_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("V = W: SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t5qqqqvv_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("V = W/Z: SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqwz_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
+
+  ///////////////////////////////    Defining T5qqqqVV_dphi plot    /////////////////////////////////
+  models.push_back(model_limits("T5qqqqVV_dphi", basetitle+"q#kern[0.2]{#bar{q}}#kern[0.2]{W}#kern[0.2]{"+lsp+"}"));
+  models.back().labMass = "m_{"+chipm+", "+chi2+"} = 0.5(m_{#lower[-0.12]{#tilde{g}}} + m_{"+lsp+"})";
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqww_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+
+  ///////////////////////////////    Defining T5qqqqVV_leptonic plot    /////////////////////////////////
+  models.push_back(model_limits("T5qqqqVV_leptonic", basetitle+"q#kern[0.2]{#bar{q}}#kern[0.2]{V}#kern[0.2]{"+lsp+"}"));
+  models.back().labMass = "m_{"+chipm+", "+chi2+"} = 0.5(m_{#lower[-0.12]{#tilde{g}}} + m_{"+lsp+"})";
+  models.back().add("V = W: SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqww_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("V = W: SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t5qqqqvv_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("V = W/Z: SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqwz_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
+
+  ///////////////////////////////    Defining T5qqqqVV_Multi plot    /////////////////////////////////
+  models.push_back(model_limits("T5qqqqVV_Multi", basetitle+"q#kern[0.2]{#bar{q}}#kern[0.2]{V}#kern[0.2]{"+lsp+"}"));
+  models.back().labMass = "m_{"+chipm+", "+chi2+"} = 0.5(m_{#lower[-0.12]{#tilde{g}}} + m_{"+lsp+"})";
+  models.back().add("V = W: SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t5qqqqvv_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("V = W/Z: SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t5qqqqwz_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 0.8));
@@ -55,14 +95,27 @@ int main(){
    		    cSus15005, "observed_1_0", "central_1_0");
   models.back().add("SUS-15-004, 1-lep (Razor), 2.1 "+ifb+" (13 TeV)", folder+"t1tbqq_sus15_004.root", 
   		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
-  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
   		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_007.root", 
   		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_008.root", 
   		    cSus15008, "ssobs", "ssexp");
   models.back().add("SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus16_003.root", 
-  		    cSus16003, "gr_obs", "gr_exp");
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+
+  ///////////////////////////////    Defining T1tttt_leptonicBF plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt_leptonicBF", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_002.root", 
+  		    cSus15002, "ObsLim", "ExpLim");
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
   models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
   		    c8TeV, "T1tttt_SUS14010", "noplot");
 
@@ -70,14 +123,14 @@ int main(){
   models.push_back(model_limits("T1tttt_leptonic", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
   models.back().add("SUS-15-004, 1-lep (Razor), 2.1 "+ifb+" (13 TeV)", folder+"t1tbqq_sus15_004.root", 
    		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
-  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
   		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_007.root", 
   		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_008.root", 
   		    cSus15008, "ssobs", "ssexp");
   models.back().add("SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus16_003.root", 
-  		    cSus16003, "gr_obs", "gr_exp");
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
   models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
   		    c8TeV, "T1tttt_SUS14010", "noplot");
 
@@ -91,6 +144,52 @@ int main(){
   		    cSus15004, "Obs_T1tttt_MultiJet", "Exp_T1tttt_MultiJet");
   models.back().add("SUS-15-005, 0-lep ("+aT+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_005.root", 
    		    cSus15005, "observed_1_0", "central_1_0");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+
+  ///////////////////////////////    Defining T1tttt_leptonicMoriond plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt_leptonicMoriond", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_007.root", 
+  		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+
+  ///////////////////////////////    Defining T1tttt_hadronicMoriond plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt_hadronicMoriond", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_002.root", 
+  		    cSus15002, "ObsLim", "ExpLim");
+  models.back().add("SUS-15-003, 0-lep ("+mt2+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_003.root", 
+  		    cSus15003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-15-004, 0-lep (Razor), 2.1 "+ifb+" (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+  		    cSus15004, "Obs_T1tttt_MultiJet", "Exp_T1tttt_MultiJet");
+  models.back().add("SUS-15-004, 1-lep (Razor), 2.1 "+ifb+" (13 TeV)", folder+"t1tbqq_sus15_004.root", 
+   		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
+  models.back().add("SUS-15-005, 0-lep ("+aT+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_005.root", 
+   		    cSus15005, "observed_1_0", "central_1_0");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+
+  ///////////////////////////////    Defining T1tttt_leptonicMulti plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt_leptonicMulti", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-15-008, #geq2-lep (SS), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_008.root", 
+  		    cSus15008, "ssobs", "ssexp");
+  models.back().add("SUS-16-003, #geq3-lep, 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus16_003.root", 
+  		    cSus16003, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
+  		    c8TeV, "T1tttt_SUS14010", "noplot");
+
+  ///////////////////////////////    Defining T1tttt_leptonicDphiMJ plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt_leptonicDphiMJ", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().add("SUS-15-006, 1-lep ("+dphi+"), 2.3 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_006.root", 
+  		    cSus15006, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+" (13 TeV)", folder+"t1tttt_sus15_007.root", 
+  		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
   		    c8TeV, "T1tttt_SUS14010", "noplot");
 
@@ -198,6 +297,8 @@ int main(){
     for(size_t file(0); file < ncurves; file++)
       limleg.AddEntry(obs[file]->GetName(), mod.labels[file], "fl");
     limleg.Draw();
+    labMass.SetTextSize(legTextSize * mod.legScale * 1.2);
+    labMass.DrawLatex(0.93, legY-legH-0.5*legLineH, mod.labMass);
 
     TString plotname(mod.model+"_limits_summary_cms.pdf");
     can.SaveAs(plotname);
@@ -299,14 +400,9 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     Ymin = 0;   Ymax = 2085;
     glu_lsp = 225;
   }
-  if(model == "T1tttt_leptonic"){
+  if(model.Contains("T1tttt_leptonic") || model.Contains("T1tttt_hadronic")){
     Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1785;
-    glu_lsp = 225;
-  }
-  if(model == "T1tttt_hadronic"){
-    Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1785;
+    Ymin = 0;   Ymax = 1675;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
@@ -318,6 +414,11 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     Xmin = 600; Xmax = 1950;
     Ymin = 0;   Ymax = 1750;
     glu_lsp = 25;
+  }    
+  if(model.Contains("T5qqqqVV")){
+    Xmin = 600; Xmax = 1950;
+    Ymin = 0;   Ymax = 1650;
+    glu_lsp = 115;
   }    
 }
 
@@ -345,7 +446,7 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05, 1-tMargin/2., title);
   // Printing date
   label.SetTextAlign(31); label.SetTextFont(52); label.SetTextSize(0.45*tMargin);
-  label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "March 2016");
+  label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "Moriond 2016");
 }
 
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
@@ -377,4 +478,5 @@ model_limits::model_limits(TString imodel, TString ititle, float ilegScale):
   model(imodel),
   title(ititle),
   legScale(ilegScale){
+  labMass = "";
   }

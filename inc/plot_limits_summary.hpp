@@ -16,7 +16,7 @@
 
 class model_limits {
 public:
-  TString model, title;
+  TString model, title, labMass;
   float legScale;
   std::vector<TString> labels, files, obsnames, expnames;
   std::vector<int> colors;
