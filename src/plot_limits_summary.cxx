@@ -13,6 +13,7 @@
 #include "TH1D.h"
 #include "TROOT.h"
 #include "TList.h"
+#include "TLine.h"
 #include "TROOT.h"
 #include "TPad.h"
 #include "TMultiGraph.h"
@@ -24,19 +25,23 @@
 using namespace std;
 namespace{
   bool do_shade = true;
+  bool debug = false;
 
-  double cmsH = 0.075;
+  int LineWidth = 4;
+  float cmsH = 0.075;
   float legLineH = 0.039;
   float legTextSize = 0.035;
   float TopMargin = 0.08;
   float legY = 1-TopMargin-cmsH-0.025;
   float fillTransparency = 0.06;
 
+  TString xtitle;
   TString lsp = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chipm = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{#pm}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
+  TString ifb("fb#lower[.2]{^{-1}}");
   int cBenchmark(do_shade?kGray+1:1);
-  int cSus16014(kBlue), cSus16015(kOrange), cSus16016(kGreen+1);//, cSus15004(kGreen+3);
+  int cSus16014(kBlue), cSus16015(kOrange), cSus16016(kGreen+1);
   //int cSus15004_1l(kBlack), cSus15007(kRed);
   int cSus16019(kMagenta+1);
   int cSus16022(kOrange+2), cSus16020(kCyan+1);
@@ -51,15 +56,44 @@ int main(){
   TString basetitle(pp_gluglu+",  #tilde{g} #rightarrow ");
   TString mj("M#lower[-.1]{_{J}}"), dphi("#Delta#phi");
   TString mt2("M#lower[-.1]{_{T2}}"), mht("H_{#lower[-.4]{T}}^{miss}"), aT("#alpha#lower[-.1]{_{T}}");
-  TString ifb("fb#lower[.2]{^{-1}}");
-  TLatex labMass; labMass.SetNDC();  
-  labMass.SetTextAlign(33); labMass.SetTextFont(42); 
- 
+
   // Folder with root files containing the TGraphs
   TString folder("root/limits_ichep2016/");
   vector<model_limits> models;
-  vector<float> mLSPs({0., 200.});
-  TString energy=""; // " (13 TeV)";
+  vector<float> mLSPs({0., 200.}); // mLSP values for which excluded mGlu is printed
+  TString energy=""; // " (13 TeV)"; // Used when there are 8 and 13 TeV results
+
+  ///////////////////////////////    Defining EWKino plot    /////////////////////////////////
+  models.push_back(model_limits("EWKino", "pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
+  models.back().lumi = "12.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 230);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 230);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 230);
+  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
+  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  		    kRed, "gr_obs", "gr_exp", 7);
+  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+   		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+
+  ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
+  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}",0.9));
+  models.back().lumi = "12.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 510);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 510);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 330, false);
+  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.5)", folder+"ewkino_sus16_024_bf0p5_x0p5.root", 
+  		    kBlue, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.05)", folder+"ewkino_sus16_024_bf0p5_x0p05.root", 
+  		    kOrange, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-024 (BF(#tau#tau)=1, x_{l}=0.5)", folder+"ewkino_sus16_024_bf1_x0p05.root", 
+  		    kGreen+1, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
+  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  		    kRed, "gr_obs", "gr_exp", 7);
+  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+   		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 0.9));
@@ -82,8 +116,8 @@ int main(){
   models.back().add("SUS-16-022, #geq3-lep, 12.9 "+ifb+energy, folder+"t1tttt_sus16_022.root", 
    		    cSus16022, "gr_obs_smoothed", "gr_exp_smoothed");
   models.back().add("SUS-16-030, 0-lep (top tag), 12.9 "+ifb+energy, folder+"t1tttt_sus16_030.root", 
-		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
-		    "combined_expExclOneTimesProspino_base_BR100pct");
+  		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
+  		    "combined_expExclOneTimesProspino_base_BR100pct");
   // models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
   // 		    cBenchmark, "T1tttt_SUS14010", "noplot");
   models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
@@ -125,17 +159,16 @@ int main(){
   //////////////////////////////////    Making plots    //////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////// 
   
-  // Creating canvas
+  //// Creating canvas
   gStyle->SetOptStat(0);  
   float lMargin(0.14), tMargin(TopMargin), rMargin(0.02), bMargin(0.14);
   TCanvas can("canvas","", 600, 600);
   setCanvas(can, lMargin, tMargin, rMargin, bMargin);
 
-  // Creating base legend for observed/expected
-  int wobs(4), wexp(4);
+  //// Creating base legend for observed/expected
   TH1D hobs("hobs","",1,0,1), hexp("hexp","",1,0,1);
-  hobs.SetLineColor(1); hobs.SetLineWidth(wobs);
-  hexp.SetLineColor(1); hexp.SetLineStyle(2); hexp.SetLineWidth(wexp);
+  hobs.SetLineColor(1); hobs.SetLineWidth(LineWidth);
+  hexp.SetLineColor(1); hexp.SetLineStyle(2); hexp.SetLineWidth(LineWidth);
 
   double legX(1-rMargin-0.02), baselegY = 1-tMargin-cmsH-0.02;
   double legW = 0.19, legH = 0.07;
@@ -149,45 +182,81 @@ int main(){
   obsleg.SetFillStyle(0); obsleg.SetBorderSize(0);
   obsleg.AddEntry(&hobs, "Observed");
 
-  // Looping over each model
+  //// General line and label
+  TLatex labMass; labMass.SetNDC();  
+  labMass.SetTextAlign(33); labMass.SetTextFont(42); 
+  TLine line;
+  TLatex label;
+
+  //// Looping over each model
   cout<<endl;
   for(size_t imodel(0); imodel < models.size(); imodel++){
     model_limits mod(models[imodel]);
-    cout<<endl<<"Model "<<mod.model<<endl<<"============================="<<endl;
 
-    // Creating base histogram and drawing lumi labels
+    //// Creating base histogram and drawing lumi labels
     float Xmin(700), Xmax(1750), Ymin(0), Ymax(1800), glu_lsp;
     getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
 
     TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax);
     hbase.Draw();
-    addLabelsTitle(lMargin, tMargin, rMargin, mod.title);
+    addLabelsTitle(lMargin, tMargin, rMargin, mod.title, mod.lumi);
 
-    // Plotting limits
+    //// Plot lines at constant dM
+    float degrees = 180/3.141593*atan2((1-tMargin-bMargin)/(Ymax-Ymin) , (1-lMargin-rMargin)/(Xmax-Xmin));
+    int lcolor(kGray+2);
+    line.SetLineStyle(2); line.SetLineWidth(2); line.SetLineColor(lcolor);
+    label.SetTextSize(0.027); label.SetTextAngle(degrees); label.SetTextColor(lcolor);
+    for(size_t iline=0; iline<mod.lines.size(); iline++){
+      float dM = mod.lines[iline].dm;
+      float minGlu=dM;
+      float maxh = mod.lines[iline].maxHeight;
+      if(dM<Xmin) minGlu = Xmin;
+      line.DrawLine(minGlu, minGlu-dM, dM+maxh, maxh);
+      float offsetX=(Xmax-Xmin)/38, offsetY=(Xmax-Xmin)/38;
+      if(mod.lines[iline].above){
+	label.SetTextAlign(31); 
+      } else {
+	label.SetTextAlign(33);
+	offsetX *= -0.5;
+	offsetY *= -0.8;
+      }
+      label.DrawLatex(dM+maxh-offsetX, maxh-offsetX+offsetY, mod.lines[iline].label);
+    }// Loop over lines
+
+    //// Plotting limits
     size_t ncurves(mod.files.size());
     vector<TGraph*> obs(ncurves, 0), exp(ncurves, 0);
     // Getting all graphs first because the ones that come from TCanvas mess up the colors
     for(size_t file(0); file < ncurves; file++){
-      //cout<<"Doing "<<mod.files[file]<<endl;
+      //cout<<"Loading "<<mod.files[file]<<endl;
       TFile flimit(mod.files[file]);
       exp[file] = getGraph(flimit, mod.expnames[file]);
       obs[file] = getGraph(flimit, mod.obsnames[file]);
     }
+    cout<<endl<<"Model "<<mod.model<<endl<<"============================="<<endl;
     for(size_t file(0); file < ncurves; file++){
-      //cout<<"Doing "<<mod.files[file]<<endl;
-      setGraphStyle(exp[file], mod.colors[file], 2, wexp, glu_lsp);
-      setGraphStyle(obs[file], mod.colors[file], 1, wobs, glu_lsp);
+      if (debug) cout<<"Doing "<<mod.files[file]<<endl;
+      float mod_gl = glu_lsp;
+      if(mod.glu_lsps[file]>0) mod_gl = mod.glu_lsps[file];
+      setGraphStyle(exp[file], mod.colors[file], 2, LineWidth, mod_gl);
+      setGraphStyle(obs[file], mod.colors[file], 1, LineWidth, mod_gl);
       printExclGlu(obs[file], exp[file], mLSPs, mod.labels[file]);
       obs[file]->Draw("f same");
 
       TString obsname("obs"); obsname += imodel; obsname += file;
       obs[file]->SetName(obsname);
     } // Loop over curves in each model
-    // Plotting the lines on top of the fills
-    for(size_t file(ncurves-1); file < ncurves; file--){
-      if(exp[file])  exp[file]->Draw("same");
-      obs[file]->Draw("same");
-    }// Loop over curves in each model
+    //// Plotting the lines on top of the fills
+    if(mod.reverseOrder)
+      for(size_t file(ncurves-1); file < ncurves; file--){
+	if(exp[file])  exp[file]->Draw("same");
+	obs[file]->Draw("same");
+      }// Loop over curves in each model
+    else
+      for(size_t file(0); file < ncurves; file++){
+	if(exp[file])  exp[file]->Draw("same");
+	obs[file]->Draw("same");
+      }// Loop over curves in each model
 
     // Drawing legends
     baseleg.Draw();
@@ -257,16 +326,43 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   graph->SetLineWidth(width); 
 
   int np(graph->GetN());
-  double mglu, iniglu, endglu, mlsp;
-  graph->GetPoint(0, iniglu, mlsp);
-  graph->GetPoint(np-1, endglu, mlsp);
+  double mglu, iniglu, endglu, mlsp, inilsp, endlsp;
+
+  // Printing all points before modifications
+  if(debug){
+    cout<<endl<<endl;
+    for(int point(0); point < graph->GetN(); point++){
+      graph->GetPoint(point, mglu, mlsp);
+      cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
+    }
+  }
+
+  // The EWKino-WZ graph had a jump. Fix it
+  makeContinuousGraph(graph);
+
+  graph->GetPoint(0, iniglu, inilsp);
+  graph->GetPoint(np-1, endglu, endlsp);
   // Reversing graph if printed towards decreasing mgluino
-  if(iniglu > endglu) reverseGraph(graph);
-  // Adding a point so that it goes down to mLSP = 0
-  graph->SetPoint(graph->GetN(), max(iniglu,endglu), 0);
-  np++;
+  if(inilsp < endlsp) {
+    reverseGraph(graph);
+    endglu = iniglu;
+    endlsp = inilsp;
+  }
+  // Adding a point so that it goes down to mLSP = 0, but not for WZ,SOS
+  if(endlsp<20){
+    graph->SetPoint(graph->GetN(), endglu, 0);
+    np++;
+  }
 
   reverseGraph(graph);
+
+  if(debug){
+    cout<<endl<<endl;
+    for(int point(0); point < graph->GetN(); point++){
+      graph->GetPoint(point, mglu, mlsp);
+      if(style==1) cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
+    }
+  }
 
   // Adding a point at mLSP = 0, and removing points beyond the diagonal
   for(int point(0); point < np; point++){
@@ -294,18 +390,54 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   graph->SetPoint(graph->GetN(), 0, -glu_lsp);
   if(x1 == x2 || y1 == y2 || slope == 1){
     // cout<<"Slope is one"<<endl;
-    // for(int point(0); point < graph->GetN(); point++){
-    //   graph->GetPoint(point, mglu, mlsp);
-    //   cout<<point<<": "<<mglu<<", "<<mlsp<<endl;
-    // }
   }
 }
 
+void makeContinuousGraph(TGraph *graph){
+  int np(graph->GetN()), iDiscontinuous=-1;
+  double mglu, mlsp, mglu_prev=-99.;
+  vector<double> mglus, mlsps;
+  for(int point=0; point < np; point++){
+    graph->GetPoint(point, mglu, mlsp);
+    mglus.push_back(mglu);
+    mlsps.push_back(mlsp);
+    if(fabs(mglu-mglu_prev) > 200 && point>0 && mglu>=0 && mlsp>=0 && mglu_prev>=0) {
+      iDiscontinuous = point;
+      if(debug) cout<<"Found discontinuity at "<<point<<" from "<<mglu_prev<<" to "<<mglu<<endl;
+    }
+    mglu_prev = mglu;
+  }
+  if(iDiscontinuous>0){
+    int index = iDiscontinuous;
+    for(int point(0); point < np; point++){
+      if(index==np) index=0;
+      graph->SetPoint(point, mglus[index], mlsps[index]);
+      index++;
+    }
+  }
+}
+
+void reverseGraph(TGraph *graph){
+  int np(graph->GetN());
+  double mglu, mlsp;
+  vector<double> mglus, mlsps;
+  for(int point(np-1); point >= 0; point--){
+    graph->GetPoint(point, mglu, mlsp);
+    mglus.push_back(mglu);
+    mlsps.push_back(mlsp);
+  }
+  for(int point(0); point < np; point++)
+    graph->SetPoint(point, mglus[point], mlsps[point]);
+}
+
+// This function relies on setGraphStyle being called earlier to have the counter-clockwise
+// orientation, and the point at mLSP = 0
 void printExclGlu(TGraph *gobs, TGraph *gexp, vector<float> &mLSPs, TString label){
   size_t nLSPs=mLSPs.size();
   vector<float> mGlusObs = intersectionLSP(gobs, mLSPs);
   vector<float> mGlusExp = intersectionLSP(gexp, mLSPs);
-  label.Remove(label.Index(','), label.Length()-label.Index(','));
+  // Keeping only the SUS-16-XXX part of the label
+  if(label.Index(',')>0) label.Remove(label.Index(','), label.Length()-label.Index(','));
   if(label.Index(' ')>0) label.Remove(label.Index(' '), label.Length()-label.Index(' '));
   cout<<label<<": observed limits for mLSP = ";
   for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
@@ -334,6 +466,7 @@ vector<float> intersectionLSP(TGraph *graph, vector<float> &mLSPs){
     for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
       if(mLSPs[ilsp]<=mlsp && mLSPs[ilsp]>mlsp_prev){
 	float mGluIntersec = mglu + (mglu_prev-mglu)*(mLSPs[ilsp]-mlsp)/(mlsp_prev-mlsp);
+	if(ilsp==0) mGluIntersec = mglu;
 	if(mGluIntersec>mGlus[ilsp]) mGlus[ilsp] = mGluIntersec;
       }
     } // Loop over desired mLSP intersections
@@ -343,20 +476,20 @@ vector<float> intersectionLSP(TGraph *graph, vector<float> &mLSPs){
   return mGlus;
 }
 
-void reverseGraph(TGraph *graph){
-  int np(graph->GetN());
-  double mglu, mlsp;
-  vector<double> mglus, mlsps;
-  for(int point(np-1); point >= 0; point--){
-    graph->GetPoint(point, mglu, mlsp);
-    mglus.push_back(mglu);
-    mlsps.push_back(mlsp);
-  }
-  for(int point(0); point < np; point++)
-    graph->SetPoint(point, mglus[point], mlsps[point]);
-}
-
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
+  xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
+  if(model == "EWK-slep"){
+    Xmin = 100; Xmax = 1050;
+    Ymin = 0;   Ymax = 870;
+    glu_lsp = 25;
+    xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
+  }
+  if(model == "EWKino"){
+    Xmin = 100; Xmax = 430;
+    Ymin = 0;   Ymax = 350;
+    glu_lsp = 25;
+    xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
+  }
   if(model == "T1tttt"){
     Xmin = 700; Xmax = 2050;
     Ymin = 0;   Ymax = 2150;
@@ -395,7 +528,7 @@ void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float 
   can.SetBottomMargin(bMargin);
 }
 
-void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
+void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title, TString lumi){
   TLatex label; label.SetNDC();  
   // Printing CMS Preliminary
   double offsetx(0.025), ycms(1-tMargin-cmsH);
@@ -413,7 +546,9 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "ICHEP 2016");
   // Printing energy
   label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.53*tMargin);
-  label.DrawLatex(1-rMargin-0.04, ycms+0.005, "13 TeV");
+  if(lumi=="") lumi = "13 TeV";
+  else lumi += " "+ifb+" (13 TeV)";
+  label.DrawLatex(1-rMargin-0.04, ycms+0.005, lumi);
 }
 
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
@@ -423,27 +558,42 @@ TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
   hbase.GetXaxis()->SetTitleFont(42);
   hbase.GetXaxis()->SetTitleSize(0.05);
   hbase.GetXaxis()->SetTitleOffset(1.2);
-  hbase.GetXaxis()->SetTitle("m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}} [GeV]");
+  hbase.GetXaxis()->SetTitle(xtitle+" [GeV]");
   hbase.GetYaxis()->SetLabelFont(42);
   hbase.GetYaxis()->SetLabelSize(0.035);
   hbase.GetYaxis()->SetTitleFont(42);
   hbase.GetYaxis()->SetTitleSize(0.05);
   hbase.GetYaxis()->SetTitleOffset(1.3);
+  hbase.GetXaxis()->SetLabelOffset(0.009);
   hbase.GetYaxis()->SetTitle("m#kern[0.12]{_{"+lsp+"}} [GeV]");
   return hbase;
 }
 
-void model_limits::add(TString label, TString file, int color, TString obsname, TString expname){
+void model_limits::add(TString label, TString file, int color, TString obsname, TString expname, float glu_lsp){
   labels.push_back(label);
   files.push_back(file);
   obsnames.push_back(obsname);
   expnames.push_back(expname);
   colors.push_back(color);
+  glu_lsps.push_back(glu_lsp);
 }
 
 model_limits::model_limits(TString imodel, TString ititle, float ilegScale):
   model(imodel),
   title(ititle),
+  lumi(""),
   legScale(ilegScale){
   labMass = "";
+  reverseOrder = true;
+  }
+
+void model_limits::addLine(TString label, float dm, float maxHeight, bool above){
+  lines.push_back(dm_line(label, dm, maxHeight, above));
+}
+
+dm_line::dm_line(TString ilabel, float idm, float imaxHeight, bool iabove):
+  label(ilabel),
+  dm(idm),
+  maxHeight(imaxHeight),
+  above(iabove){
   }
