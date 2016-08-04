@@ -14,13 +14,13 @@
 #include "TError.h" // Controls error level reporting
 
 // User includes
-#include "plot_limits_summary.hpp"
+#include "plot_limits_t5tttt.hpp"
 
 using namespace std;
 namespace{
   //double cmsH = 0.075;
-  double cmsH = 0.05;
-  float legLineH = 0.045;
+  double cmsH = 0.03;
+  float legLineH = 0.052;
   float legTextSize = 0.035;
   float fillTransparency = 0.08;
 
@@ -41,18 +41,18 @@ int main(){
   //TString mt2("M#lower[-.1]{_{T2}}"), mht("#slash{H}#lower[-.1]{_{T}}"), aT("#alpha#lower[-.1]{_{T}}");
 
   // Folder with root files containing the TGraphs
-  TString folder("root/limits_2015/");
+  TString folder("root/limits_2016/");
   vector<model_limits> models;
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", pp_gluglu));
   models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}, #tilde{g} #rightarrow t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 
 		    folder+"t1tttt_sus15_007.root", 
-  		    kRed, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  		    kRed-4, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}+#tilde{t}_{1}#kern[0.3]{#tilde{t}}_{1}, #tilde{g} #rightarrow #tilde{t}_{1}t,  #tilde{t}_{1} #rightarrow #bar{t}#kern[0.4]{"
 		    +lsp+"}   (m#kern[0.3]{_{#lower[-0.12]{#tilde{t}_{1}}}} - m#kern[0.12]{_{"+lsp+"}} = 175 GeV)", 
 		    folder+"t5tttt_sus15_007.root", 
-  		    kBlue, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  		    kBlue+1, "graph_smoothed_Obs", "graph_smoothed_Exp");
 
 
   //////////////////////////////////////////////////////////////////////////////////////// 
@@ -66,11 +66,11 @@ int main(){
   setCanvas(can, lMargin, tMargin, rMargin, bMargin);
 
   // Creating base legend for observed/expected
-  int wobs(4), wexp(2);
+  int wobs(4), wexp(4);
   TH1D hobs("hobs","",1,0,1), hexp("hexp","",1,0,1);
   hobs.SetLineColor(1); hobs.SetLineWidth(wobs);
   hexp.SetLineColor(1); hexp.SetLineStyle(2); hexp.SetLineWidth(wexp);
-  double legX(1-rMargin-0.04), legY(1-tMargin-0.03);
+  double legX(1-rMargin-0.04), legY(1-tMargin-0.13);
   double legW = 0.2, legH = 0.07;
   TLegend baseleg(legX-legW, legY-legH, legX, legY);
   baseleg.SetTextSize(0.034); baseleg.SetFillColor(0); 
@@ -121,9 +121,7 @@ int main(){
     }// Loop over curves in each model
 
     // Drawing legends
-    baseleg.Draw();
-    obsleg.Draw();
-    legX = lMargin+0.03; legY = 1-tMargin-cmsH-0.035;
+    legX = lMargin+0.03; legY = 1-tMargin-cmsH;
     legW = 0.13; 
     legH = legLineH * ncurves;
     TLegend limleg(legX, legY-legH, legX+legW, legY);
@@ -132,6 +130,12 @@ int main(){
     for(size_t file(0); file < ncurves; file++)
       limleg.AddEntry(obs[file]->GetName(), mod.labels[file], "fl");
     limleg.Draw();
+
+    legY = 1-legY-legH-0.02-0.1; legH = 0.07;
+    obsleg.SetY1NDC(legY-legH); obsleg.SetY2NDC(legY);
+    baseleg.SetY1NDC(legY-legH); baseleg.SetY2NDC(legY);
+    baseleg.Draw();
+    obsleg.Draw();
 
     TString plotname(mod.model+"_limits_summary_cms.pdf");
     can.SaveAs(plotname);
@@ -252,7 +256,7 @@ void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float 
 void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   TLatex label; label.SetNDC();  
   // Printing CMS Preliminary
-  double offsetx(0.025), ycms(1-tMargin-cmsH);
+  double offsetx(0.0), ycms(1-tMargin-cmsH);
   label.SetTextAlign(12); label.SetTextFont(61); label.SetTextSize(0.75*tMargin);
   label.DrawLatex(lMargin+offsetx, 1-tMargin/2., "CMS");
   label.SetTextAlign(12); label.SetTextFont(52); label.SetTextSize(0.038);
@@ -264,7 +268,7 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   cout<<ycms<<title<<endl;
   // Printing date
   label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.45*tMargin);
-  label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "2.2 fb^{-1} (13 TeV)");
+  label.DrawLatex(1-rMargin, 1-tMargin+0.018, "2.3 fb^{-1} (13 TeV)");
 }
 
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
