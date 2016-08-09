@@ -40,6 +40,7 @@ namespace{
   TString chipm = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{#pm}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
   TString ifb("fb#lower[.2]{^{-1}}");
+  TString xl("x#lower[-.2]{_{l}}");
   int cBenchmark(do_shade?kGray+1:1);
   int cSus16014(kBlue), cSus16015(kOrange), cSus16016(kGreen+1);
   //int cSus15004_1l(kBlack), cSus15007(kRed);
@@ -69,11 +70,11 @@ int main(){
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 230);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 230);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 230);
-  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  models.back().add("SUS-16-024, 3-lep (WH)", folder+"ewkino_sus16_024_wh.root", 
   		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
-  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  models.back().add("SUS-16-024, 3-lep (WZ)", folder+"ewkino_sus16_024_wz.root", 
   		    kRed, "gr_obs", "gr_exp", 7);
-  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+  models.back().add("SUS-16-025, soft 2-lep (WZ)", folder+"ewkino_sus16_025.root", 
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
@@ -82,17 +83,17 @@ int main(){
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 510);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 510);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 330, false);
-  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.5)", folder+"ewkino_sus16_024_bf0p5_x0p5.root", 
-  		    kBlue, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.05)", folder+"ewkino_sus16_024_bf0p5_x0p05.root", 
+  models.back().add("SUS-16-024, 2l SS + 3l (BF(ll)=0.5, "+xl+"=0.05)", folder+"ewkino_sus16_024_bf0p5_x0p05.root", 
   		    kOrange, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (BF(#tau#tau)=1, x_{l}=0.5)", folder+"ewkino_sus16_024_bf1_x0p05.root", 
+  models.back().add("SUS-16-024, 3-lep (BF(ll)=0.5, "+xl+"=0.5)", folder+"ewkino_sus16_024_bf0p5_x0p5.root", 
+  		    kBlue, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-024, 3-lep (BF(#tau#tau)=1, "+xl+"=0.5)", folder+"ewkino_sus16_024_bf1_x0p05.root", 
   		    kGreen+1, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  models.back().add("SUS-16-024, 3-lep (WH)", folder+"ewkino_sus16_024_wh.root", 
   		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
-  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  models.back().add("SUS-16-024, 3-lep (WZ)", folder+"ewkino_sus16_024_wz.root", 
   		    kRed, "gr_obs", "gr_exp", 7);
-  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+  models.back().add("SUS-16-025, soft 2-lep (WZ)", folder+"ewkino_sus16_025.root", 
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
@@ -161,7 +162,7 @@ int main(){
   
   //// Creating canvas
   gStyle->SetOptStat(0);  
-  float lMargin(0.14), tMargin(TopMargin), rMargin(0.02), bMargin(0.14);
+  float lMargin(0.14), tMargin(TopMargin), rMargin(0.04), bMargin(0.14);
   TCanvas can("canvas","", 600, 600);
   setCanvas(can, lMargin, tMargin, rMargin, bMargin);
 
@@ -170,15 +171,15 @@ int main(){
   hobs.SetLineColor(1); hobs.SetLineWidth(LineWidth);
   hexp.SetLineColor(1); hexp.SetLineStyle(2); hexp.SetLineWidth(LineWidth);
 
-  double legX(1-rMargin-0.02), baselegY = 1-tMargin-cmsH-0.02;
-  double legW = 0.19, legH = 0.07;
+  double legX(1-rMargin-0.045), baselegY = 1-tMargin-cmsH-0.02;
+  double legW = 0.14, legH = 0.07;
   TLegend baseleg(legX-legW, baselegY-legH, legX, baselegY);
-  baseleg.SetTextSize(0.034); baseleg.SetFillColor(0); 
+  baseleg.SetTextSize(0.031); baseleg.SetFillColor(0); 
   baseleg.SetFillStyle(0); baseleg.SetBorderSize(0);
   baseleg.AddEntry(&hexp, "Expected");
-  baselegY = baselegY - 0.04;
+  baselegY = baselegY - 0.038;
   TLegend obsleg(legX-legW, baselegY-legH, legX, baselegY);
-  obsleg.SetTextSize(0.034); obsleg.SetFillColor(0); 
+  obsleg.SetTextSize(0.031); obsleg.SetFillColor(0); 
   obsleg.SetFillStyle(0); obsleg.SetBorderSize(0);
   obsleg.AddEntry(&hobs, "Observed");
 
@@ -212,13 +213,14 @@ int main(){
       float maxh = mod.lines[iline].maxHeight;
       if(dM<Xmin) minGlu = Xmin;
       line.DrawLine(minGlu, minGlu-dM, dM+maxh, maxh);
+      // offsetX controls where along the line to put the label, offsetY how far from it
       float offsetX=(Xmax-Xmin)/38, offsetY=(Xmax-Xmin)/38;
       if(mod.lines[iline].above){
 	label.SetTextAlign(31); 
       } else {
 	label.SetTextAlign(33);
-	offsetX *= -0.5;
-	offsetY *= -0.8;
+	offsetX *= -0.4;
+	offsetY *= -0.7;
       }
       label.DrawLatex(dM+maxh-offsetX, maxh-offsetX+offsetY, mod.lines[iline].label);
     }// Loop over lines
@@ -480,7 +482,7 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
   xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
   if(model == "EWK-slep"){
     Xmin = 100; Xmax = 1050;
-    Ymin = 0;   Ymax = 870;
+    Ymin = 0;   Ymax = 890;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
@@ -491,27 +493,27 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
   if(model == "T1tttt"){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 2150;
     glu_lsp = 225;
   }
   if(model.Contains("T1tttt_leptonic") || model.Contains("T1tttt_hadronic")){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1675;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1985;
     glu_lsp = 25;
   }    
   if(model == "T1qqqq"){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1750;
     glu_lsp = 25;
   }    
   if(model.Contains("T5qqqqVV")){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1650;
     glu_lsp = 115;
   }    
