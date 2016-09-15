@@ -24,7 +24,7 @@
 
 using namespace std;
 namespace{
-  bool do_shade = true;
+  bool no_shade = true;
   bool debug = false;
 
   int LineWidth = 4;
@@ -40,11 +40,11 @@ namespace{
   TString chipm = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{#pm}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
   TString ifb("fb#lower[.2]{^{-1}}");
-  int cBenchmark(do_shade?kGray+1:1);
+  TString xl("x#lower[-.2]{_{l}}");
+  int cBenchmark(no_shade?kGray+1:1);
   int cSus16014(kBlue), cSus16015(kOrange), cSus16016(kGreen+1);
-  //int cSus15004_1l(kBlack), cSus15007(kRed);
-  int cSus16019(kMagenta+1);
-  int cSus16022(kOrange+2), cSus16020(kCyan+1);
+  //int cSus16018(kBlack);
+  int cSus16022(kOrange+2), cSus16020(kCyan+1), cSus16019(kMagenta+1);
   int cSus16030(kRed);
 }
 
@@ -69,90 +69,79 @@ int main(){
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 230);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 230);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 230);
-  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  models.back().add("SUS-16-024, 3-lep (WH)", folder+"ewkino_sus16_024_wh.root", 
   		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
-  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  models.back().add("SUS-16-024, 3-lep (WZ)", folder+"ewkino_sus16_024_wz.root", 
   		    kRed, "gr_obs", "gr_exp", 7);
-  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+  models.back().add("SUS-16-025, soft 2-lep (WZ)", folder+"ewkino_sus16_025.root", 
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}",0.9));
+  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.9));
   models.back().lumi = "12.9"; models.back().reverseOrder = false;
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 510);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 510);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 330, false);
-  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.5)", folder+"ewkino_sus16_024_bf0p5_x0p5.root", 
-  		    kBlue, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (BF(ll)=0.5, x_{l}=0.05)", folder+"ewkino_sus16_024_bf0p5_x0p05.root", 
+  models.back().add("SUS-16-024, 2l SS + 3l (BF(ll)=0.5, "+xl+"=0.05)", folder+"ewkino_sus16_024_bf0p5_x0p05.root", 
   		    kOrange, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (BF(#tau#tau)=1, x_{l}=0.5)", folder+"ewkino_sus16_024_bf1_x0p05.root", 
+  models.back().add("SUS-16-024, 3-lep (BF(ll)=0.5, "+xl+"=0.5)", folder+"ewkino_sus16_024_bf0p5_x0p5.root", 
+  		    kBlue, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-024, 3-lep (BF(#tau#tau)=1, "+xl+"=0.5)", folder+"ewkino_sus16_024_bf1_x0p05.root", 
   		    kGreen+1, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-024 (WH)", folder+"ewkino_sus16_024_wh.root", 
+  models.back().add("SUS-16-024, 3-lep (WH)", folder+"ewkino_sus16_024_wh.root", 
   		    kMagenta+1, "gr_obs", "gr_exp", 124.5);
-  models.back().add("SUS-16-024 (WZ)", folder+"ewkino_sus16_024_wz.root", 
+  models.back().add("SUS-16-024, 3-lep (WZ)", folder+"ewkino_sus16_024_wz.root", 
   		    kRed, "gr_obs", "gr_exp", 7);
-  models.back().add("SUS-16-025 (WZ, SOS)", folder+"ewkino_sus16_025.root", 
+  models.back().add("SUS-16-025, soft 2-lep (WZ)", folder+"ewkino_sus16_025.root", 
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
-  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 0.9));
-  models.back().add("SUS-16-014, 0-lep ("+mht+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_014.root", 
+  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014, 0-lep ("+mht+")", folder+"t1tttt_sus16_014.root", 
   		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015, 0-lep ("+mt2+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_015.root", 
+  models.back().add("SUS-16-015, 0-lep ("+mt2+")", folder+"t1tttt_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004, 0-lep (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1tttt_MultiJet", "Exp_T1tttt_MultiJet");
-  models.back().add("SUS-16-016, 0-lep ("+aT+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_016.root", 
+  models.back().add("SUS-16-016, 0-lep ("+aT+")", folder+"t1tttt_sus16_016.root", 
    		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-15-004, 1-lep (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
-  models.back().add("SUS-16-019, 1-lep ("+dphi+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_019.root", 
+  // models.back().add("SUS-16-018, 1-lep ("+mj+")", folder+"t1tttt_sus16_018.root", 
+  // 		    cSus16018, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-16-019, 1-lep ("+dphi+")", folder+"t1tttt_sus16_019.root", 
    		    cSus16019, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  // models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+energy, folder+"t1tttt_sus15_007.root", 
-  // 		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  models.back().add("SUS-16-020, #geq2-lep (SS), 12.9 "+ifb+energy, folder+"t1tttt_sus16_020.root", 
+  models.back().add("SUS-16-020, #geq2-lep (SS)", folder+"t1tttt_sus16_020.root", 
    		    cSus16020, "ssobs", "ssexp");
-  models.back().add("SUS-16-022, #geq3-lep, 12.9 "+ifb+energy, folder+"t1tttt_sus16_022.root", 
+  models.back().add("SUS-16-022, #geq3-lep", folder+"t1tttt_sus16_022.root", 
    		    cSus16022, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-030, 0-lep (top tag), 12.9 "+ifb+energy, folder+"t1tttt_sus16_030.root", 
+  models.back().add("SUS-16-030, 0-lep (top tag)", folder+"t1tttt_sus16_030.root", 
   		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
   		    "combined_expExclOneTimesProspino_base_BR100pct");
-  // models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
-  // 		    cBenchmark, "T1tttt_SUS14010", "noplot");
-  models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
-  		    cBenchmark, "ObsLim", "ExpLim");
+  // models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
+  // 		    cBenchmark, "ObsLim", "ExpLim");
 
   ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
   models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-16-014 ("+mht+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_014.root", 
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014 ("+mht+")", folder+"t1bbbb_sus16_014.root", 
    		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015 ("+mt2+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_015.root", 
+  models.back().add("SUS-16-015 ("+mt2+")", folder+"t1bbbb_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004 (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1bbbb_MultiJet", "Exp_T1bbbb_MultiJet");
-  models.back().add("SUS-16-016 ("+aT+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_016.root", 
+  models.back().add("SUS-16-016 ("+aT+")", folder+"t1bbbb_sus16_016.root", 
    		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-14-011 (Razor), 19.3 "+ifb+" (8 TeV)", folder+"t1bbbb_sus14_011.root", 
-  // 		    cBenchmark, "T1bbbb_SUS14011", "noplot");
-  models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
-  		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
 
   ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
   models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-16-014 ("+mht+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_014.root", 
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014 ("+mht+")", folder+"t1qqqq_sus16_014.root", 
   		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015 ("+mt2+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_015.root", 
+  models.back().add("SUS-16-015 ("+mt2+")", folder+"t1qqqq_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004 (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1qqqq_MultiJet", "Exp_T1qqqq_MultiJet");
-  // models.back().add("SUS-16-016 ("+aT+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_016.root", 
+  // models.back().add("SUS-16-016 ("+aT+")", folder+"t1qqqq_sus16_016.root", 
   //  		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-13-019 ("+mt2+"), 19.5 "+ifb+" (8 TeV)", folder+"t1qqqq_sus13_019.root", 
-  // 		    cBenchmark, "T1_SUS13019", "noplot");
-  models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
-  		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
 
   //////////////////////////////////////////////////////////////////////////////////////// 
@@ -161,7 +150,7 @@ int main(){
   
   //// Creating canvas
   gStyle->SetOptStat(0);  
-  float lMargin(0.14), tMargin(TopMargin), rMargin(0.02), bMargin(0.14);
+  float lMargin(0.14), tMargin(TopMargin), rMargin(0.04), bMargin(0.14);
   TCanvas can("canvas","", 600, 600);
   setCanvas(can, lMargin, tMargin, rMargin, bMargin);
 
@@ -170,15 +159,15 @@ int main(){
   hobs.SetLineColor(1); hobs.SetLineWidth(LineWidth);
   hexp.SetLineColor(1); hexp.SetLineStyle(2); hexp.SetLineWidth(LineWidth);
 
-  double legX(1-rMargin-0.02), baselegY = 1-tMargin-cmsH-0.02;
-  double legW = 0.19, legH = 0.07;
+  double legX(1-rMargin-0.045), baselegY = 1-tMargin-cmsH-0.02;
+  double legW = 0.14, legH = 0.07;
   TLegend baseleg(legX-legW, baselegY-legH, legX, baselegY);
-  baseleg.SetTextSize(0.034); baseleg.SetFillColor(0); 
+  baseleg.SetTextSize(0.031); baseleg.SetFillColor(0); 
   baseleg.SetFillStyle(0); baseleg.SetBorderSize(0);
   baseleg.AddEntry(&hexp, "Expected");
-  baselegY = baselegY - 0.04;
+  baselegY = baselegY - 0.038;
   TLegend obsleg(legX-legW, baselegY-legH, legX, baselegY);
-  obsleg.SetTextSize(0.034); obsleg.SetFillColor(0); 
+  obsleg.SetTextSize(0.031); obsleg.SetFillColor(0); 
   obsleg.SetFillStyle(0); obsleg.SetBorderSize(0);
   obsleg.AddEntry(&hobs, "Observed");
 
@@ -212,13 +201,14 @@ int main(){
       float maxh = mod.lines[iline].maxHeight;
       if(dM<Xmin) minGlu = Xmin;
       line.DrawLine(minGlu, minGlu-dM, dM+maxh, maxh);
+      // offsetX controls where along the line to put the label, offsetY how far from it
       float offsetX=(Xmax-Xmin)/38, offsetY=(Xmax-Xmin)/38;
       if(mod.lines[iline].above){
 	label.SetTextAlign(31); 
       } else {
 	label.SetTextAlign(33);
-	offsetX *= -0.5;
-	offsetY *= -0.8;
+	offsetX *= -0.4;
+	offsetY *= -0.7;
       }
       label.DrawLatex(dM+maxh-offsetX, maxh-offsetX+offsetY, mod.lines[iline].label);
     }// Loop over lines
@@ -273,7 +263,7 @@ int main(){
     labMass.SetTextSize(legTextSize * mod.legScale * 1.2);
     labMass.DrawLatex(0.93, legY-legH-0.5*legLineH, mod.labMass);
 
-    TString plotname(mod.model+"_limits_summary_cms"+(do_shade?"_shade":"")+".pdf");
+    TString plotname(mod.model+"_limits_summary_cms"+(!no_shade?"_shade":"")+".pdf");
     can.SaveAs(plotname);
     cout<<" open "<<plotname<<endl<<endl;
   } // Loop over models
@@ -317,7 +307,7 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   graph->SetLineStyle(style);
   int fillcolor(color);
   graph->SetFillColor(fillcolor);
-  if(!do_shade) graph->SetFillColorAlpha(fillcolor, fillTransparency);
+  if(!no_shade) graph->SetFillColorAlpha(fillcolor, fillTransparency);
   else {
     if(color == cBenchmark) graph->SetFillColorAlpha(fillcolor, 0.35);
     else graph->SetFillColorAlpha(fillcolor, 0);
@@ -480,7 +470,7 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
   xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
   if(model == "EWK-slep"){
     Xmin = 100; Xmax = 1050;
-    Ymin = 0;   Ymax = 870;
+    Ymin = 0;   Ymax = 890;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
@@ -490,28 +480,28 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
-  if(model == "T1tttt"){
-    Xmin = 700; Xmax = 2050;
-    Ymin = 0;   Ymax = 2150;
+  if(model.Contains("T1tttt")){
+    Xmin = 700; Xmax = 2000;
+    Ymin = 0;   Ymax = 2250;
     glu_lsp = 225;
   }
   if(model.Contains("T1tttt_leptonic") || model.Contains("T1tttt_hadronic")){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1675;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
-    Xmin = 700; Xmax = 2050;
-    Ymin = 0;   Ymax = 1985;
+    Xmin = 700; Xmax = 2000;
+    Ymin = 0;   Ymax = 1850;
     glu_lsp = 25;
   }    
   if(model == "T1qqqq"){
-    Xmin = 700; Xmax = 2050;
-    Ymin = 0;   Ymax = 1750;
+    Xmin = 700; Xmax = 2000;
+    Ymin = 0;   Ymax = 1550;
     glu_lsp = 25;
   }    
   if(model.Contains("T5qqqqVV")){
-    Xmin = 700; Xmax = 2050;
+    Xmin = 700; Xmax = 2000;
     Ymin = 0;   Ymax = 1650;
     glu_lsp = 115;
   }    
