@@ -24,7 +24,7 @@
 
 using namespace std;
 namespace{
-  bool do_shade = true;
+  bool no_shade = true;
   bool debug = false;
 
   int LineWidth = 4;
@@ -41,11 +41,10 @@ namespace{
   TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
   TString ifb("fb#lower[.2]{^{-1}}");
   TString xl("x#lower[-.2]{_{l}}");
-  int cBenchmark(do_shade?kGray+1:1);
+  int cBenchmark(no_shade?kGray+1:1);
   int cSus16014(kBlue), cSus16015(kOrange), cSus16016(kGreen+1);
-  //int cSus15004_1l(kBlack), cSus15007(kRed);
-  int cSus16019(kMagenta+1);
-  int cSus16022(kOrange+2), cSus16020(kCyan+1);
+  //int cSus16018(kBlack);
+  int cSus16022(kOrange+2), cSus16020(kCyan+1), cSus16019(kMagenta+1);
   int cSus16030(kRed);
 }
 
@@ -78,7 +77,7 @@ int main(){
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}",0.9));
+  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.9));
   models.back().lumi = "12.9"; models.back().reverseOrder = false;
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 510);
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 510);
@@ -97,63 +96,52 @@ int main(){
    		    1, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
-  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 0.9));
-  models.back().add("SUS-16-014, 0-lep ("+mht+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_014.root", 
+  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014, 0-lep ("+mht+")", folder+"t1tttt_sus16_014.root", 
   		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015, 0-lep ("+mt2+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_015.root", 
+  models.back().add("SUS-16-015, 0-lep ("+mt2+")", folder+"t1tttt_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004, 0-lep (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1tttt_MultiJet", "Exp_T1tttt_MultiJet");
-  models.back().add("SUS-16-016, 0-lep ("+aT+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_016.root", 
+  models.back().add("SUS-16-016, 0-lep ("+aT+")", folder+"t1tttt_sus16_016.root", 
    		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-15-004, 1-lep (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004_1l, "Obs_T1tttt_MuMultiJet_EleMultiJet", "Exp_T1tttt_MuMultiJet_EleMultiJet");
-  models.back().add("SUS-16-019, 1-lep ("+dphi+"), 12.9 "+ifb+energy, folder+"t1tttt_sus16_019.root", 
+  // models.back().add("SUS-16-018, 1-lep ("+mj+")", folder+"t1tttt_sus16_018.root", 
+  // 		    cSus16018, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-16-019, 1-lep ("+dphi+")", folder+"t1tttt_sus16_019.root", 
    		    cSus16019, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  // models.back().add("SUS-15-007, 1-lep ("+mj+"), 2.2 "+ifb+energy, folder+"t1tttt_sus15_007.root", 
-  // 		    cSus15007, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  models.back().add("SUS-16-020, #geq2-lep (SS), 12.9 "+ifb+energy, folder+"t1tttt_sus16_020.root", 
+  models.back().add("SUS-16-020, #geq2-lep (SS)", folder+"t1tttt_sus16_020.root", 
    		    cSus16020, "ssobs", "ssexp");
-  models.back().add("SUS-16-022, #geq3-lep, 12.9 "+ifb+energy, folder+"t1tttt_sus16_022.root", 
+  models.back().add("SUS-16-022, #geq3-lep", folder+"t1tttt_sus16_022.root", 
    		    cSus16022, "gr_obs_smoothed", "gr_exp_smoothed");
-  models.back().add("SUS-16-030, 0-lep (top tag), 12.9 "+ifb+energy, folder+"t1tttt_sus16_030.root", 
+  models.back().add("SUS-16-030, 0-lep (top tag)", folder+"t1tttt_sus16_030.root", 
   		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
   		    "combined_expExclOneTimesProspino_base_BR100pct");
-  // models.back().add("SUS-14-010, 0+1+2+#geq3-lep, 19.5 "+ifb+" (8 TeV)", folder+"t1tttt_sus14_010.root", 
-  // 		    cBenchmark, "T1tttt_SUS14010", "noplot");
-  models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
-  		    cBenchmark, "ObsLim", "ExpLim");
+  // models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
+  // 		    cBenchmark, "ObsLim", "ExpLim");
 
   ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
   models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-16-014 ("+mht+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_014.root", 
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014 ("+mht+")", folder+"t1bbbb_sus16_014.root", 
    		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015 ("+mt2+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_015.root", 
+  models.back().add("SUS-16-015 ("+mt2+")", folder+"t1bbbb_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004 (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1bbbb_MultiJet", "Exp_T1bbbb_MultiJet");
-  models.back().add("SUS-16-016 ("+aT+"), 12.9 "+ifb+energy, folder+"t1bbbb_sus16_016.root", 
+  models.back().add("SUS-16-016 ("+aT+")", folder+"t1bbbb_sus16_016.root", 
    		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-14-011 (Razor), 19.3 "+ifb+" (8 TeV)", folder+"t1bbbb_sus14_011.root", 
-  // 		    cBenchmark, "T1bbbb_SUS14011", "noplot");
-  models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
-  		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
 
   ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
   models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
-  models.back().add("SUS-16-014 ("+mht+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_014.root", 
+  models.back().lumi = "12.9"; 
+  models.back().add("SUS-16-014 ("+mht+")", folder+"t1qqqq_sus16_014.root", 
   		    cSus16014, "ObsLim", "ExpLim");
-  models.back().add("SUS-16-015 ("+mt2+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_015.root", 
+  models.back().add("SUS-16-015 ("+mt2+")", folder+"t1qqqq_sus16_015.root", 
   		    cSus16015, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-15-004 (Razor), 2.1 "+ifb+energy, folder+"t1tbqq_sus15_004.root", 
-  // 		    cSus15004, "Obs_T1qqqq_MultiJet", "Exp_T1qqqq_MultiJet");
-  // models.back().add("SUS-16-016 ("+aT+"), 12.9 "+ifb+energy, folder+"t1qqqq_sus16_016.root", 
+  // models.back().add("SUS-16-016 ("+aT+")", folder+"t1qqqq_sus16_016.root", 
   //  		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-13-019 ("+mt2+"), 19.5 "+ifb+" (8 TeV)", folder+"t1qqqq_sus13_019.root", 
-  // 		    cBenchmark, "T1_SUS13019", "noplot");
-  models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
-  		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
 
   //////////////////////////////////////////////////////////////////////////////////////// 
@@ -275,7 +263,7 @@ int main(){
     labMass.SetTextSize(legTextSize * mod.legScale * 1.2);
     labMass.DrawLatex(0.93, legY-legH-0.5*legLineH, mod.labMass);
 
-    TString plotname(mod.model+"_limits_summary_cms"+(do_shade?"_shade":"")+".pdf");
+    TString plotname(mod.model+"_limits_summary_cms"+(!no_shade?"_shade":"")+".pdf");
     can.SaveAs(plotname);
     cout<<" open "<<plotname<<endl<<endl;
   } // Loop over models
@@ -319,7 +307,7 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   graph->SetLineStyle(style);
   int fillcolor(color);
   graph->SetFillColor(fillcolor);
-  if(!do_shade) graph->SetFillColorAlpha(fillcolor, fillTransparency);
+  if(!no_shade) graph->SetFillColorAlpha(fillcolor, fillTransparency);
   else {
     if(color == cBenchmark) graph->SetFillColorAlpha(fillcolor, 0.35);
     else graph->SetFillColorAlpha(fillcolor, 0);
@@ -492,9 +480,9 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
-  if(model == "T1tttt"){
+  if(model.Contains("T1tttt")){
     Xmin = 700; Xmax = 2000;
-    Ymin = 0;   Ymax = 2150;
+    Ymin = 0;   Ymax = 2250;
     glu_lsp = 225;
   }
   if(model.Contains("T1tttt_leptonic") || model.Contains("T1tttt_hadronic")){
@@ -504,12 +492,12 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
   }
   if(model == "T1bbbb"){
     Xmin = 700; Xmax = 2000;
-    Ymin = 0;   Ymax = 1985;
+    Ymin = 0;   Ymax = 1850;
     glu_lsp = 25;
   }    
   if(model == "T1qqqq"){
     Xmin = 700; Xmax = 2000;
-    Ymin = 0;   Ymax = 1750;
+    Ymin = 0;   Ymax = 1550;
     glu_lsp = 25;
   }    
   if(model.Contains("T5qqqqVV")){
