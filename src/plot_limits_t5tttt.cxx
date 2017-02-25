@@ -106,7 +106,7 @@ int main(){
       obs[file] = getGraph(flimit, mod.obsnames[file]);
     }
     for(size_t file(0); file < ncurves; file++){
-      if(mod.labels[file].Contains("T5tttt")) glu_lsp += 50;
+      if(mod.labels[file].Contains("T5tttt")) glu_lsp += 40;
       setGraphStyle(exp[file], mod.colors[file], 2, wexp, glu_lsp);
       setGraphStyle(obs[file], mod.colors[file], 1, wobs, glu_lsp);
       obs[file]->Draw("f same");
