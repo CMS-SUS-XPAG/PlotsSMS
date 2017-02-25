@@ -41,17 +41,17 @@ int main(){
   //TString mt2("M#lower[-.1]{_{T2}}"), mht("#slash{H}#lower[-.1]{_{T}}"), aT("#alpha#lower[-.1]{_{T}}");
 
   // Folder with root files containing the TGraphs
-  TString folder("root/limits_2016/");
+  TString folder("config/SUS16037/");
   vector<model_limits> models;
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", pp_gluglu));
   models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}, #tilde{g} #rightarrow t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 
-		    folder+"t1tttt_sus15_007.root", 
+		    folder+"T1tttt_results.root", 
   		    kRed-4, "graph_smoothed_Obs", "graph_smoothed_Exp");
   models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}+#tilde{t}_{1}#kern[0.3]{#tilde{t}}_{1}, #tilde{g} #rightarrow #tilde{t}_{1}t,  #tilde{t}_{1} #rightarrow #bar{t}#kern[0.4]{"
 		    +lsp+"}   (m#kern[0.3]{_{#lower[-0.12]{#tilde{t}_{1}}}} - m#kern[0.12]{_{"+lsp+"}} = 175 GeV)", 
-		    folder+"t5tttt_sus15_007.root", 
+		    folder+"T5tttt_results.root", 
   		    kBlue+1, "graph_smoothed_Obs", "graph_smoothed_Exp");
 
 
@@ -226,8 +226,8 @@ void reverseGraph(TGraph *graph){
 
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   if(model == "T1tttt"){
-    Xmin = 600; Xmax = 1750;
-    Ymin = 0;   Ymax = 1285;
+    Xmin = 600; Xmax = 2200.;
+    Ymin = 0;   Ymax = 1600;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
@@ -268,7 +268,7 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   cout<<ycms<<title<<endl;
   // Printing date
   label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.45*tMargin);
-  label.DrawLatex(1-rMargin, 1-tMargin+0.018, "2.3 fb^{-1} (13 TeV)");
+  label.DrawLatex(1-rMargin, 1-tMargin+0.018, "35.9 fb^{-1} (13 TeV)");
 }
 
 TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
