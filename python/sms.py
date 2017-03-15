@@ -5,6 +5,7 @@ class sms():
     def __init__(self, modelname):
         if modelname.find("T1tttt") != -1: self.T1tttt()
         if modelname.find("T5ttttDM175") != -1: self.T5ttttDM175()
+        if modelname.find("T5tttt") != -1: self.T5tttt()
         if modelname.find("T1bbbb") != -1: self.T1bbbb()
         if modelname.find("T1qqqq") != -1: self.T1qqqq()
 
@@ -18,9 +19,30 @@ class sms():
         self.label2= "";
         # scan range to plot
         self.Xmin = 600.
-        self.Xmax = 2000.
+        self.Xmax = 2200.
         self.Ymin = 0.
-        self.Ymax = 1800.
+        self.Ymax = 1900.
+        self.Zmin = 0.001
+        self.Zmax = 2.
+        # produce sparticle
+        self.sParticle = "m#kern[0.1]{_{#lower[-0.12]{#tilde{g}}}} [GeV]"
+        # LSP
+        self.LSP = "m#kern[0.1]{_{"+lsp_s+"}} [GeV]"
+        # turn off diagonal lines
+        self.diagOn = False
+        
+    def T5tttt(self):
+        # model name
+        self.modelname = "T1tttt"
+        # decay chain
+        lsp_s = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}"
+        self.label= "pp #rightarrow #tilde{g} #tilde{g}, #tilde{g} #rightarrow t #bar{t} "+lsp_s;
+        self.label2= "";
+        # scan range to plot
+        self.Xmin = 600.
+        self.Xmax = 2200.
+        self.Ymin = 0.
+        self.Ymax = 1900.
         self.Zmin = 0.001
         self.Zmax = 2.
         # produce sparticle
