@@ -46,6 +46,7 @@ TGraph* getGraph(TFile &flimit, TString gname);
 void setGraphStyle(TGraph *graph, int color, int style, int width, double glu_lsp);
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
 void reverseGraph(TGraph *graph);
+void changeDmCoordinates(TGraph *graph);
 void makeContinuousGraph(TGraph *graph);
 void printExclGlu(TGraph *gobs, TGraph *gexp, std::vector<float> &mLSPs, TString label);
 std::vector<float> intersectionLSP(TGraph *graph, std::vector<float> &mLSPs);
