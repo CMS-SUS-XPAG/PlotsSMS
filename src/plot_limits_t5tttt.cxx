@@ -21,7 +21,7 @@ namespace{
   //double cmsH = 0.075;
   double cmsH = 0.03;
   float legLineH = 0.052;
-  float legTextSize = 0.035;
+  float legTextSize = 0.0375;
   float fillTransparency = 0.08;
 
   TString lsp = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
@@ -49,7 +49,7 @@ int main(){
   models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}, #tilde{g} #rightarrow t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}", 
 		    folder+"T1tttt_results.root", 
   		    kRed-4, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}+#tilde{t}_{1}#kern[0.3]{#tilde{t}}_{1}, #tilde{g} #rightarrow #tilde{t}_{1}t,  #tilde{t}_{1} #rightarrow #bar{t}#kern[0.4]{"
+  models.back().add("pp #rightarrow #tilde{g}#kern[0.3]{#tilde{g}}, #tilde{g} #rightarrow #tilde{t}_{1}t,  #tilde{t}_{1} #rightarrow #bar{t}#kern[0.4]{"
 		    +lsp+"}   (m#kern[0.3]{_{#lower[-0.12]{#tilde{t}_{1}}}} - m#kern[0.12]{_{"+lsp+"}} = 175 GeV)", 
 		    folder+"T5tttt_results.root", 
   		    kBlue+1, "graph_smoothed_Obs", "graph_smoothed_Exp");
@@ -226,8 +226,8 @@ void reverseGraph(TGraph *graph){
 
 void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   if(model == "T1tttt"){
-    Xmin = 600; Xmax = 2200.;
-    Ymin = 0;   Ymax = 1600;
+    Xmin = 600; Xmax = 2100.;
+    Ymin = 0;   Ymax = 1800;
     glu_lsp = 225;
   }
   if(model == "T1bbbb"){
@@ -260,14 +260,14 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   label.SetTextAlign(12); label.SetTextFont(61); label.SetTextSize(0.75*tMargin);
   label.DrawLatex(lMargin+offsetx, 1-tMargin/2., "CMS");
   label.SetTextAlign(12); label.SetTextFont(52); label.SetTextSize(0.038);
-  //label.DrawLatex(0.27+offsetx, 1-tMargin/2.-0.013, "Preliminary");
+  label.DrawLatex(0.27+offsetx, 1-tMargin/2.-0.013, "Preliminary");
   // Printing top title
   label.SetTextAlign(21); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
   //label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05, 1-tMargin/2., title);
   //label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05-0.25, ycms, title);
   cout<<ycms<<title<<endl;
   // Printing date
-  label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.45*tMargin);
+  label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
   label.DrawLatex(1-rMargin, 1-tMargin+0.018, "35.9 fb^{-1} (13 TeV)");
 }
 
