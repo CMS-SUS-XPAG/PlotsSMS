@@ -18,7 +18,7 @@ class inputFile():
             tmpLINE =  line[:-1].split(" ")
             if tmpLINE[0] != attribute: continue
             fileIN.close()
-            return tmpLINE[1]
+            return " ".join(tmpLINE[1:])
 
     def findHISTOGRAM(self, fileName):
         fileIN = open(fileName)        
