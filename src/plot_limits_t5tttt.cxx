@@ -14,7 +14,8 @@
 #include "TError.h" // Controls error level reporting
 
 // User includes
-#include "plot_limits_t5tttt.hpp"
+#include "utilities.hpp"
+#include "model_limits.hpp"
 
 using namespace std;
 namespace{
@@ -29,6 +30,9 @@ namespace{
   // int cSus15002(kBlue), cSus15003(kOrange), cSus15004(kGreen+1), cSus15005(kMagenta+1);
   // int cSus15004_1l(kBlack), cSus15007(kRed), cSus15008(kCyan+2);
 }
+
+TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
+void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title);
 
 int main(){
   gErrorIgnoreLevel=kWarning; // Turns off ROOT INFO messages
@@ -90,9 +94,9 @@ int main(){
 
     // Creating base histogram and drawing lumi labels
     float Xmin(700), Xmax(1750), Ymin(0), Ymax(1800), glu_lsp;
-    getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
+    TString xtitle = getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
 
-    TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax);
+    TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax, xtitle);
     hbase.Draw();
     addLabelsTitle(lMargin, tMargin, rMargin, mod.title);
 
@@ -144,113 +148,14 @@ int main(){
   cout<<endl<<endl;
 }
 
-
-TGraph* getGraph(TFile &flimit, TString gname){
-  TGraph *graph = static_cast<TGraph*>(flimit.Get(gname));
-  // If the TGraph is not directly provided in the root file, try to extract it from a TCanvas
-  if(graph==0) {
-    TPad *current_pad = static_cast<TPad*>(gPad);
-    TCanvas *c1 = static_cast<TCanvas*>(flimit.Get("c1"));
-    current_pad->cd();
-    if(c1==0) return 0;
-    graph = static_cast<TGraph*>(c1->GetListOfPrimitives()->FindObject(gname));
-    if(graph==0) return 0;
-  }
-  return graph;
-}
-
-void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_lsp){
-  if(graph==0) return;
-
-  // Setting graph style
-  graph->SetLineColor(color);
-  graph->SetLineStyle(style);
-  int fillcolor(color);
-  graph->SetFillColor(fillcolor);
-  graph->SetFillColorAlpha(fillcolor, fillTransparency);
-  graph->SetFillStyle(1001);
-  graph->SetLineWidth(width); 
-
-  int np(graph->GetN());
-  double mglu, iniglu, endglu, mlsp;
-  graph->GetPoint(0, iniglu, mlsp);
-  graph->GetPoint(np-1, endglu, mlsp);
-  // Reversing graph if printed towards decreasing mgluino
-  if(iniglu > endglu) reverseGraph(graph);
-  // Adding a point so that it goes down to mLSP = 0
-  graph->SetPoint(graph->GetN(), max(iniglu,endglu), 0);
-  np++;
-
-  reverseGraph(graph);
-
-  // Adding a point at LSP = 0, and removing points beyond the diagonal
-  for(int point(0); point < np; point++){
-    graph->GetPoint(point, mglu, mlsp);
-    if(mlsp > mglu-glu_lsp){
-      while(point <= graph->GetN()) 
-	graph->RemovePoint(graph->GetN()-1);
-      break;
-    }
-  }
-  // Finding intersection of line between last 2 points and mlsp = mglu - glu_lsp
-  double x1, y1, x2, y2;
-  graph->GetPoint(np-1, x1, y1);
-  graph->GetPoint(np-2, x2, y2);
-  double slope((y1-y2)/(x1-x2)), offset(y1-slope*x1);
-  double intersection((offset+glu_lsp)/(1-slope));
-  cout<<"intersection "<<intersection<<", slope "<<slope<<", glu_lsp "<<glu_lsp<<endl;
-
-  // Adding extrapolation into the diagonal, and point for mglu = 0
-  if(slope!=1) graph->SetPoint(graph->GetN(), intersection, intersection-glu_lsp);
-  graph->SetPoint(graph->GetN(), 0, -glu_lsp);
-  if(x1 == x2 || y1 == y2 || slope == 1){
-    for(int point(0); point < graph->GetN(); point++){
-      graph->GetPoint(point, mglu, mlsp);
-      //cout<<point<<": "<<mglu<<", "<<mlsp<<endl;
-    }
-  }
-}
-
-void reverseGraph(TGraph *graph){
-  int np(graph->GetN());
-  double mglu, mlsp;
-  vector<double> mglus, mlsps;
-  for(int point(np-1); point >= 0; point--){
-    graph->GetPoint(point, mglu, mlsp);
-    mglus.push_back(mglu);
-    mlsps.push_back(mlsp);
-  }
-  for(int point(0); point < np; point++)
-    graph->SetPoint(point, mglus[point], mlsps[point]);
-}
-
-void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
-  if(model == "T1tttt"){
-    Xmin = 600; Xmax = 2100.;
-    Ymin = 0;   Ymax = 1800;
+TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
+  TString xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
+  if(model.Contains("T1tttt")){
+    Xmin = 700; Xmax = 2200;
+    Ymin = 0;   Ymax = 2050;
     glu_lsp = 225;
   }
-  if(model == "T1bbbb"){
-    Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1885;
-    glu_lsp = 25;
-  }    
-  if(model == "T1qqqq"){
-    Xmin = 600; Xmax = 1950;
-    Ymin = 0;   Ymax = 1750;
-    glu_lsp = 25;
-  }    
-}
-
-
-void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin){
-  can.SetLogz();
-  can.SetTickx(1);
-  can.SetTicky(1);
-  can.SetLeftMargin(lMargin);
-  can.SetTopMargin(tMargin);
-  can.SetRightMargin(rMargin);
-  can.SetBottomMargin(bMargin);
+  return xtitle;
 }
 
 void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
@@ -265,39 +170,8 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title){
   label.SetTextAlign(21); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
   //label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05, 1-tMargin/2., title);
   //label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05-0.25, ycms, title);
-  cout<<ycms<<title<<endl;
   // Printing date
   label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
   label.DrawLatex(1-rMargin, 1-tMargin+0.018, "35.9 fb^{-1} (13 TeV)");
 }
 
-TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
-  TH2D hbase("hbase", "", 1, Xmin, Xmax, 1, Ymin, Ymax);
-  hbase.GetXaxis()->SetLabelFont(42);
-  hbase.GetXaxis()->SetLabelSize(0.035);
-  hbase.GetXaxis()->SetTitleFont(42);
-  hbase.GetXaxis()->SetTitleSize(0.05);
-  hbase.GetXaxis()->SetTitleOffset(1.2);
-  hbase.GetXaxis()->SetTitle("m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}} [GeV]");
-  hbase.GetYaxis()->SetLabelFont(42);
-  hbase.GetYaxis()->SetLabelSize(0.035);
-  hbase.GetYaxis()->SetTitleFont(42);
-  hbase.GetYaxis()->SetTitleSize(0.05);
-  hbase.GetYaxis()->SetTitleOffset(1.3);
-  hbase.GetYaxis()->SetTitle("m#kern[0.12]{_{"+lsp+"}} [GeV]");
-  return hbase;
-}
-
-void model_limits::add(TString label, TString file, int color, TString obsname, TString expname){
-  labels.push_back(label);
-  files.push_back(file);
-  obsnames.push_back(obsname);
-  expnames.push_back(expname);
-  colors.push_back(color);
-}
-
-model_limits::model_limits(TString imodel, TString ititle, float ilegScale):
-  model(imodel),
-  title(ititle),
-  legScale(ilegScale){
-  }

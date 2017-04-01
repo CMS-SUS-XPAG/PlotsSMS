@@ -16,11 +16,11 @@
 #include "TLine.h"
 #include "TROOT.h"
 #include "TPad.h"
-#include "TMultiGraph.h"
 #include "TError.h" // Controls error level reporting
 
 // User includes
-#include "plot_limits_summary.hpp"
+#include "utilities.hpp"
+#include "model_limits.hpp"
 
 using namespace std;
 namespace{
@@ -35,14 +35,13 @@ namespace{
   float legY = 1-TopMargin-cmsH-0.025;
   float fillTransparency = 0.06;
 
-  TString xtitle;
   TString lsp = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chipm = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{#pm}}}#kern[-1.3]{#scale[0.85]{_{1}}}";
   TString chi2 = "#lower[-0.12]{#tilde{#chi}}#lower[0.2]{#scale[0.85]{^{0}}}#kern[-1]{#scale[0.85]{_{2}}}";
   TString ifb("fb#lower[.2]{^{-1}}");
   TString xl("x#lower[-.2]{_{l}}");
 
-  TString flavDem = chipm+chi2+"#rightarrowl#tilde{#nu}l#tilde{l}";
+  TString flavDem = chipm+chi2+"#rightarrowl#tilde{#nu}l#tilde{l}, BF(ll)=0.5";
   TString tauRich = chipm+chi2+"#rightarrow#tilde{#tau}#nul#tilde{l}";
   TString tauDom  = chipm+chi2+"#rightarrow#tilde{#tau}#nu#tau#tilde{#tau}";
 
@@ -54,9 +53,12 @@ namespace{
 
   int c5050 = kBlue, c5005 = kAzure+7, c5095 = kSpring-6;
   int c10050 = kOrange-2, c10005 = kGray+1, c10095 = kOrange+2;
-  int ctau50 = kGreen+1;
-  int cwh = kMagenta+1, cwz39 = kRed, cwz48 = 1;
+  int ctau50 = kPink+1;
+  int cwh = kMagenta+1, cwh43 = kGreen+1, cwz39 = kRed, cwz48 = 1, cwz34 = kCyan+2;
 }
+
+TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp);
+void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title, TString lumi);
 
 int main(){
   gErrorIgnoreLevel=kWarning; // Turns off ROOT INFO messages
@@ -74,168 +76,131 @@ int main(){
   TString energy=""; // " (13 TeV)"; // Used when there are 8 and 13 TeV results
 
 
-  // ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  // models.push_back(model_limits("EWKino","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
-  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 235);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 235);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 235);
+  ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
+  models.push_back(model_limits("EWKino","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
+  models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 250);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 250);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 250);
 
-  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
-  // 		    cwh, "gr_obs", "gr_exp", 124.5);
-  // models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
-  // 		    cwz39, "gr_obs", "gr_exp", 7);
-  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
-  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+  models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
+  		    cwh, "gr_obs", "gr_exp", 124.5);
+  models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
+  		    cwh43, "graph_smoothed_Obs", "graph_smoothed_Exp", 124.5);
+  models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
+  		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
+  models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
+  		    cwz39, "gr_obs", "gr_exp", 7);
+  models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
+   		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
-  // ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  // models.push_back(model_limits("EWK-slep-0p5","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
-  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
-  // //models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
+  ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
+  models.push_back(model_limits("EWK-slep-0p5","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.9));
+  models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
 
-  // models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
-  // 		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
-  // 		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
-  // 		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
-  // 		    cwh, "gr_obs", "gr_exp", 124.5);
-  // models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
-  // 		    cwz39, "gr_obs", "gr_exp", 7);
-  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
-  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+  models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
+  		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
+  		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
+  		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
+  		    cwh, "gr_obs", "gr_exp", 124.5);
+  models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
+  		    cwh43, "graph_smoothed_Obs", "graph_smoothed_Exp", 124.5);
+  models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
+  		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
+  models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
+  		    cwz39, "gr_obs", "gr_exp", 7);
+  models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
+   		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
-  // ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  // models.push_back(model_limits("EWK-slep-0p5-withmH","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
-  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
+  ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
+  models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.8));
+  models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
 
-  // models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
-  // 		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
-  // 		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
-  // 		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
-  // 		    cwh, "gr_obs", "gr_exp", 124.5);
-  // models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
-  // 		    cwz39, "gr_obs", "gr_exp", 7);
-  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
-  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
+  		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf1_x0p05_gr.root", 
+  		    c10005, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf1_x0p95_gr.root", 
+  		    c10095, "gr_obs_smoothed", "gr_exp_smoothed");
 
-  // ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  // models.push_back(model_limits("EWK-slep","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.8));
-  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
-  // //models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
+  models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
+  		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf0p5_x0p05_gr.root", 
+  		    c5005, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf0p5_x0p95_gr.root", 
+  		    c5095, "gr_obs_smoothed", "gr_exp_smoothed");
 
-  // models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
-  // 		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf0p5_x0p05_gr.root", 
-  // 		    c5005, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf0p5_x0p95_gr.root", 
-  // 		    c5095, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
+  		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
+  		    cwh, "gr_obs", "gr_exp", 124.5);
 
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
-  // 		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf1_x0p05_gr.root", 
-  // 		    c10005, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf1_x0p95_gr.root", 
-  // 		    c10095, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
+  		    cwh43, "graph_smoothed_Obs", "graph_smoothed_Exp", 124.5);
+  models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
+  		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
+  models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
+  		    cwz39, "gr_obs", "gr_exp", 7);
+  models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
+   		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
 
-  // models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
-  // 		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
-  // 		    cwh, "gr_obs", "gr_exp", 124.5);
-  // models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
-  // 		    cwz39, "gr_obs", "gr_exp", 7);
-  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
-  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
-
-  // ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
-  // models.push_back(model_limits("EWK-slep-withmH","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.8));
-  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
-  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 850, false);
-
-  // models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
-  // 		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf0p5_x0p05_gr.root", 
-  // 		    c5005, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf0p5_x0p95_gr.root", 
-  // 		    c5095, "gr_obs_smoothed", "gr_exp_smoothed");
-
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
-  // 		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf1_x0p05_gr.root", 
-  // 		    c10005, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf1_x0p95_gr.root", 
-  // 		    c10095, "gr_obs_smoothed", "gr_exp_smoothed");
-
-  // models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
-  // 		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
-  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
-  // 		    cwh, "gr_obs", "gr_exp", 124.5);
-  // models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
-  // 		    cwz39, "gr_obs", "gr_exp", 7);
-  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
-  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
-
-  // ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
-  // models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
-  // models.back().lumi = "35.9"; 
-  // models.back().add("SUS-16-033, 0-lep ("+mht+")", folder+"t1tttt_sus16_033.root", 
-  // 		    cSus16033, "ObsLim", "ExpLim");
-  // models.back().add("SUS-16-036, 0-lep ("+mt2+")", folder+"t1tttt_sus16_036.root", 
-  // 		    cSus16036, "ObsLim", "ExpLim");
-  // // models.back().add("SUS-16-016, 0-lep ("+aT+")", folder+"t1tttt_sus16_016.root", 
-  // //  		    cSus16016, "observed_total", "expected_total");
-  // models.back().add("SUS-16-037, 1-lep ("+mj+")", folder+"t1tttt_sus16_037.root", 
-  //  		    cSus16037, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  // models.back().add("SUS-16-042, 1-lep ("+dphi+")", folder+"t1tttt_sus16_042.root", 
-  //   		    cSus16042, "graph_smoothed_Obs", "graph_smoothed_Exp");
-  // models.back().add("SUS-16-035, #geq2-lep (SS)", folder+"t1tttt_sus16_035.root", 
-  //  		    cSus16035, "ssobs", "ssexp");
-  // models.back().add("SUS-16-041, #geq3-lep", folder+"t1tttt_sus16_041.root", 
-  //   		    kOrange, "contour_obs", "contour_exp");
-  // // models.back().add("SUS-16-030, 0-lep (top tag)", folder+"t1tttt_sus16_030.root", 
-  // // 		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
-  // // 		    "combined_expExclOneTimesProspino_base_BR100pct");
-  // // models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
-  // // 		    cBenchmark, "ObsLim", "ExpLim");
+  ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
+  models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
+  models.back().lumi = "35.9"; 
+  models.back().add("SUS-16-033, 0-lep ("+mht+")", folder+"t1tttt_sus16_033.root", 
+  		    cSus16033, "ObsLim", "ExpLim");
+  models.back().add("SUS-16-036, 0-lep ("+mt2+")", folder+"t1tttt_sus16_036.root", 
+  		    cSus16036, "ObsLim", "ExpLim");
+  // models.back().add("SUS-16-016, 0-lep ("+aT+")", folder+"t1tttt_sus16_016.root", 
+  //  		    cSus16016, "observed_total", "expected_total");
+  models.back().add("SUS-16-037, 1-lep ("+mj+")", folder+"t1tttt_sus16_037.root", 
+   		    cSus16037, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-16-042, 1-lep ("+dphi+")", folder+"t1tttt_sus16_042.root", 
+    		    cSus16042, "graph_smoothed_Obs", "graph_smoothed_Exp");
+  models.back().add("SUS-16-035, #geq2-lep (SS)", folder+"t1tttt_sus16_035.root", 
+   		    cSus16035, "ssobs", "ssexp");
+  models.back().add("SUS-16-041, #geq3-lep", folder+"t1tttt_sus16_041.root", 
+    		    kOrange, "contour_obs", "contour_exp");
+  // models.back().add("SUS-16-030, 0-lep (top tag)", folder+"t1tttt_sus16_030.root", 
+  // 		    cSus16030, "combined_obsExclOneTimesProspino_base_BR100pct", 
+  // 		    "combined_expExclOneTimesProspino_base_BR100pct");
+  // models.back().add("SUS-15-002, 0-lep ("+mht+"), 2.3 "+ifb+energy, folder+"t1tttt_sus15_002.root", 
+  // 		    cBenchmark, "ObsLim", "ExpLim");
 
 
-  // ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
-  // models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
-  // models.back().lumi = "35.9"; 
-  // models.back().add("SUS-16-033 ("+mht+")", folder+"t1bbbb_sus16_033.root", 
-  //  		    cSus16033, "ObsLim", "ExpLim");
-  // models.back().add("SUS-16-036 ("+mt2+")", folder+"t1bbbb_sus16_036.root", 
-  // 		    cSus16036, "ObsLim", "ExpLim");
-  // // models.back().add("SUS-16-016 ("+aT+")", folder+"t1bbbb_sus16_016.root", 
-  // //  		    cSus16016, "observed_total", "expected_total");
-  // // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
-  // // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  ///////////////////////////////    Defining T1bbbb plot    /////////////////////////////////
+  models.push_back(model_limits("T1bbbb", basetitle+"b#kern[0.23]{#bar{b}}#kern[0.2]{"+lsp+"}"));
+  models.back().lumi = "35.9"; 
+  models.back().add("SUS-16-033 ("+mht+")", folder+"t1bbbb_sus16_033.root", 
+   		    cSus16033, "ObsLim", "ExpLim");
+  models.back().add("SUS-16-036 ("+mt2+")", folder+"t1bbbb_sus16_036.root", 
+  		    cSus16036, "ObsLim", "ExpLim");
+  // models.back().add("SUS-16-016 ("+aT+")", folder+"t1bbbb_sus16_016.root", 
+  //  		    cSus16016, "observed_total", "expected_total");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1bbbb_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
 
-  // ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
-  // models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
-  // models.back().lumi = "35.9"; 
-  // models.back().add("SUS-16-033 ("+mht+")", folder+"t1qqqq_sus16_033.root", 
-  // 		    cSus16033, "ObsLim", "ExpLim");
-  // models.back().add("SUS-16-036 ("+mt2+")", folder+"t1qqqq_sus16_036.root", 
-  // 		    cSus16036, "ObsLim", "ExpLim");
-  // // models.back().add("SUS-16-016 ("+aT+")", folder+"t1qqqq_sus16_016.root", 
-  // //  		    cSus16016, "observed_total", "expected_total");
-  // // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
-  // // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
+  ///////////////////////////////    Defining T1qqqq plot    /////////////////////////////////
+  models.push_back(model_limits("T1qqqq", basetitle+"q#kern[0.23]{#bar{q}}#kern[0.2]{"+lsp+"}"));
+  models.back().lumi = "35.9"; 
+  models.back().add("SUS-16-033 ("+mht+")", folder+"t1qqqq_sus16_033.root", 
+  		    cSus16033, "ObsLim", "ExpLim");
+  models.back().add("SUS-16-036 ("+mt2+")", folder+"t1qqqq_sus16_036.root", 
+  		    cSus16036, "ObsLim", "ExpLim");
+  // models.back().add("SUS-16-016 ("+aT+")", folder+"t1qqqq_sus16_016.root", 
+  //  		    cSus16016, "observed_total", "expected_total");
+  // models.back().add("SUS-15-003 ("+mt2+"), 2.3 "+ifb+energy, folder+"t1qqqq_sus15_003.root", 
+  // 		    cBenchmark, "gr_obs_smoothed", "gr_exp_smoothed");
 
   ///////////////////////////////    Defining T5qqqqVV plot    /////////////////////////////////
   models.push_back(model_limits("T5qqqqVV", basetitle+"q#kern[0.2]{#bar{q}}#kern[0.2]{V}#kern[0.2]{"+lsp+"}"));
@@ -290,9 +255,9 @@ int main(){
 
     //// Creating base histogram and drawing lumi labels
     float Xmin(700), Xmax(1750), Ymin(0), Ymax(1800), glu_lsp;
-    getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
+    TString xtitle = getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
 
-    TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax);
+    TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax, xtitle);
     hbase.Draw();
     addLabelsTitle(lMargin, tMargin, rMargin, mod.title, mod.lumi);
 
@@ -339,8 +304,8 @@ int main(){
 	changeDmCoordinates(exp[file]);
 	changeDmCoordinates(obs[file]);
       }
-      setGraphStyle(exp[file], mod.colors[file], 2, LineWidth, mod_gl);
-      setGraphStyle(obs[file], mod.colors[file], 1, LineWidth, mod_gl);
+      setGraphStyle(exp[file], mod.colors[file], 2, LineWidth, mod_gl, debug);
+      setGraphStyle(obs[file], mod.colors[file], 1, LineWidth, mod_gl, debug);
       //printExclGlu(obs[file], exp[file], mLSPs, mod.labels[file]);
       obs[file]->Draw("f same");
 
@@ -382,227 +347,23 @@ int main(){
 }
 
 
-TGraph* getGraph(TFile &flimit, TString gname){
-  if(gname == "noplot") return 0;
-  TGraph *graph = static_cast<TGraph*>(flimit.Get(gname));
-  if(graph->InheritsFrom(TMultiGraph::Class())){
-    TMultiGraph *mgraph = static_cast<TMultiGraph*>(flimit.Get(gname));
-    TList *list = mgraph->GetListOfGraphs();
-    TIter liter(list);
-    return static_cast<TGraph*>(liter());
-  }
-
-  // If the TGraph is not directly provided in the root file, try to extract it from a TCanvas
-  if(graph==0) {
-    TPad *current_pad = static_cast<TPad*>(gPad);
-    TCanvas *c1 = static_cast<TCanvas*>(flimit.Get("c1"));
-    current_pad->cd();
-    if(c1==0) {
-      cout<<"Could not find graph "<<gname<<" in file "<<flimit.GetName()<<". Exiting!"<<endl<<endl;
-      exit(0);
-    }
-    graph = static_cast<TGraph*>(c1->GetListOfPrimitives()->FindObject(gname));
-    if(graph==0) {
-      cout<<"Could not find graph "<<gname<<" in file "<<flimit.GetName()<<". Exiting!"<<endl<<endl;
-      exit(0);
-    }
-  }
-  return graph;
-}
-
-void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_lsp){
-  if(graph==0) return;
-
-  // Setting graph style
-  graph->SetLineColor(color);
-  graph->SetLineStyle(style);
-  int fillcolor(color);
-  graph->SetFillColor(fillcolor);
-  if(!no_shade) graph->SetFillColorAlpha(fillcolor, fillTransparency);
-  else {
-    if(color == cBenchmark) graph->SetFillColorAlpha(fillcolor, 0.35);
-    else graph->SetFillColorAlpha(fillcolor, 0);
-  }
-  graph->SetFillStyle(1001);
-  graph->SetLineWidth(width); 
-
-  int np(graph->GetN());
-  double mglu, iniglu, endglu, mlsp, inilsp, endlsp;
-
-  // Printing all points before modifications
-  if(debug){
-    cout<<endl<<endl;
-    for(int point(0); point < graph->GetN(); point++){
-      graph->GetPoint(point, mglu, mlsp);
-      cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
-    }
-  }
-
-  // The EWKino-WZ graph had a jump. Fix it
-  makeContinuousGraph(graph);
-
-  graph->GetPoint(0, iniglu, inilsp);
-  graph->GetPoint(np-1, endglu, endlsp);
-  // Reversing graph if printed towards decreasing mgluino
-  if(inilsp < endlsp) {
-    reverseGraph(graph);
-    endglu = iniglu;
-    endlsp = inilsp;
-  }
-  // Adding a point so that it goes down to mLSP = 0, but not for WZ,SOS
-  if(endlsp<20){
-    graph->SetPoint(graph->GetN(), endglu, 0);
-    np++;
-  }
-
-  reverseGraph(graph);
-
-  if(debug){
-    cout<<endl<<endl;
-    for(int point(0); point < graph->GetN(); point++){
-      graph->GetPoint(point, mglu, mlsp);
-      if(style==1) cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
-    }
-  }
-
-  // Adding a point at mLSP = 0, and removing points beyond the diagonal
-  for(int point(0); point < np; point++){
-    graph->GetPoint(point, mglu, mlsp);
-    if(mlsp > mglu-glu_lsp){
-      while(point <= graph->GetN()) {
-	graph->RemovePoint(graph->GetN()-1);
-	np--;
-      }
-      break;
-    }
-  }
-  // Finding intersection of line between last 2 points and mlsp = mglu - glu_lsp
-  double x1, y1, x2, y2;
-  graph->GetPoint(np-1, x1, y1);
-  graph->GetPoint(np-2, x2, y2);
-  double slope((y1-y2)/(x1-x2)), offset(y1-slope*x1);
-  double intersection((offset+glu_lsp)/(1-slope));
-   // cout<<endl<<"("<<x1<<","<<y1<<") to ("<<x2<<","<<y2<<") -> intersection at ("
-   //     <<intersection<<","<<intersection-glu_lsp<<"), slope "<<slope<<", offset "<<offset<<endl;
-
-
-  // Adding extrapolation into the diagonal, and point for mglu = 0
-  if(slope<1) graph->SetPoint(graph->GetN(), intersection, intersection-glu_lsp);
-  graph->SetPoint(graph->GetN(), 0, -glu_lsp);
-  if(x1 == x2 || y1 == y2 || slope == 1){
-    // cout<<"Slope is one"<<endl;
-  }
-}
-
-void makeContinuousGraph(TGraph *graph){
-  int np(graph->GetN()), iDiscontinuous=-1;
-  double mglu, mlsp, mglu_prev=-99.;
-  vector<double> mglus, mlsps;
-  for(int point=0; point < np; point++){
-    graph->GetPoint(point, mglu, mlsp);
-    mglus.push_back(mglu);
-    mlsps.push_back(mlsp);
-    if(fabs(mglu-mglu_prev) > 200 && point>0 && mglu>=0 && mlsp>=0 && mglu_prev>=0) {
-      iDiscontinuous = point;
-      if(debug) cout<<"Found discontinuity at "<<point<<" from "<<mglu_prev<<" to "<<mglu<<endl;
-    }
-    mglu_prev = mglu;
-  }
-  if(iDiscontinuous>0){
-    int index = iDiscontinuous;
-    for(int point(0); point < np; point++){
-      if(index==np) index=0;
-      graph->SetPoint(point, mglus[index], mlsps[index]);
-      index++;
-    }
-  }
-}
-
-void changeDmCoordinates(TGraph *graph){
-  int np(graph->GetN());
-  double mglu, mlsp;
-  for(int point(0); point < np; point++){
-    graph->GetPoint(point, mglu, mlsp);
-    graph->SetPoint(point, mglu, mglu-mlsp);
-  }
-}
-
-void reverseGraph(TGraph *graph){
-  int np(graph->GetN());
-  double mglu, mlsp;
-  vector<double> mglus, mlsps;
-  for(int point(np-1); point >= 0; point--){
-    graph->GetPoint(point, mglu, mlsp);
-    mglus.push_back(mglu);
-    mlsps.push_back(mlsp);
-  }
-  for(int point(0); point < np; point++)
-    graph->SetPoint(point, mglus[point], mlsps[point]);
-}
-
-// This function relies on setGraphStyle being called earlier to have the counter-clockwise
-// orientation, and the point at mLSP = 0
-void printExclGlu(TGraph *gobs, TGraph *gexp, vector<float> &mLSPs, TString label){
-  size_t nLSPs=mLSPs.size();
-  vector<float> mGlusObs = intersectionLSP(gobs, mLSPs);
-  vector<float> mGlusExp = intersectionLSP(gexp, mLSPs);
-  // Keeping only the SUS-16-XXX part of the label
-  if(label.Index(',')>0) label.Remove(label.Index(','), label.Length()-label.Index(','));
-  if(label.Index(' ')>0) label.Remove(label.Index(' '), label.Length()-label.Index(' '));
-  cout<<label<<": observed limits for mLSP = ";
-  for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
-    cout<<round(mLSPs[ilsp]);
-    if(ilsp<nLSPs-1) cout<<", ";
-  }
-  cout<<" are mGlu = ";
-  for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
-    cout<<setw(4)<<round(mGlusObs[ilsp]);
-    if(ilsp<nLSPs-1) cout<<", ";
-  }
-  cout<<"  (for expected limits mGlu = ";
-  for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
-    cout<<setw(4)<<round(mGlusExp[ilsp]);
-    if(ilsp<nLSPs-1) cout<<", ";
-  }
-  cout<<")"<<endl;
-}
-
-vector<float> intersectionLSP(TGraph *graph, vector<float> &mLSPs){
-  size_t nLSPs=mLSPs.size();
-  vector<float> mGlus(nLSPs,-99.);
-  double mglu, mglu_prev=-99., mlsp, mlsp_prev=-99.;
-  for(int point(0); point < graph->GetN(); point++){
-    graph->GetPoint(point, mglu, mlsp);
-    for(size_t ilsp=0; ilsp<nLSPs; ilsp++) {
-      if(mLSPs[ilsp]<=mlsp && mLSPs[ilsp]>mlsp_prev){
-	float mGluIntersec = mglu + (mglu_prev-mglu)*(mLSPs[ilsp]-mlsp)/(mlsp_prev-mlsp);
-	if(ilsp==0) mGluIntersec = mglu;
-	if(mGluIntersec>mGlus[ilsp]) mGlus[ilsp] = mGluIntersec;
-      }
-    } // Loop over desired mLSP intersections
-    mglu_prev = mglu;
-    mlsp_prev = mlsp;
-  } // Loop over graph points
-  return mGlus;
-}
-
-void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
-  xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
+TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
+  TString xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
   if(model.Contains("EWK-slep")){
     Xmin = 100; Xmax = 1250;
-    Ymin = 0;   Ymax = 1350;
+    Ymin = 0;   Ymax = 1570;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
   if(model.Contains("EWK-slep-0p5")){
     Xmin = 100; Xmax = 1250;
-    Ymin = 0;   Ymax = 1250;
+    Ymin = 0;   Ymax = 1260;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
   if(model == "EWKino"){
-    Xmin = 100; Xmax = 500;
-    Ymin = 0;   Ymax = 350;
+    Xmin = 100; Xmax = 650;
+    Ymin = 0;   Ymax = 430;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
@@ -631,23 +392,13 @@ void getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float 
     Ymin = 0;   Ymax = 1850;
     glu_lsp = 125;
   }    
-}
-
-
-void setCanvas(TCanvas &can, float lMargin, float tMargin, float rMargin, float bMargin){
-  can.SetLogz();
-  can.SetTickx(1);
-  can.SetTicky(1);
-  can.SetLeftMargin(lMargin);
-  can.SetTopMargin(tMargin);
-  can.SetRightMargin(rMargin);
-  can.SetBottomMargin(bMargin);
+  return xtitle;
 }
 
 void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title, TString lumi){
   TLatex label; label.SetNDC();  
   // Printing CMS Preliminary
-  double offsetx(0.025), ycms(1-tMargin-cmsH);
+  double offsetx(0.025), ycms(1-tMargin-0.075);
   label.SetTextAlign(11); label.SetTextFont(61); label.SetTextSize(0.75*tMargin);
   label.DrawLatex(lMargin+offsetx, ycms, "CMS");
   label.SetTextAlign(11); label.SetTextFont(52); label.SetTextSize(0.038);
@@ -667,50 +418,3 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title, 
   label.DrawLatex(1-rMargin-0.04, ycms+0.005, lumi);
 }
 
-TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax){
-  TH2D hbase("hbase", "", 1, Xmin, Xmax, 1, Ymin, Ymax);
-  hbase.GetXaxis()->SetLabelFont(42);
-  hbase.GetXaxis()->SetLabelSize(0.035);
-  hbase.GetXaxis()->SetTitleFont(42);
-  hbase.GetXaxis()->SetTitleSize(0.05);
-  hbase.GetXaxis()->SetTitleOffset(1.2);
-  hbase.GetXaxis()->SetLabelOffset(0.009);
-  hbase.GetXaxis()->SetTitle(xtitle+" [GeV]");
-
-  hbase.GetYaxis()->SetLabelFont(42);
-  hbase.GetYaxis()->SetLabelSize(0.035);
-  hbase.GetYaxis()->SetTitleFont(42);
-  hbase.GetYaxis()->SetTitleSize(0.05);
-  hbase.GetYaxis()->SetTitleOffset(1.35);
-  hbase.GetYaxis()->SetTitle("m#kern[0.12]{_{"+lsp+"}} [GeV]");
-  return hbase;
-}
-
-void model_limits::add(TString label, TString file, int color, TString obsname, TString expname, float glu_lsp){
-  labels.push_back(label);
-  files.push_back(file);
-  obsnames.push_back(obsname);
-  expnames.push_back(expname);
-  colors.push_back(color);
-  glu_lsps.push_back(glu_lsp);
-}
-
-model_limits::model_limits(TString imodel, TString ititle, float ilegScale):
-  model(imodel),
-  title(ititle),
-  lumi(""),
-  legScale(ilegScale){
-  labMass = "";
-  reverseOrder = true;
-  }
-
-void model_limits::addLine(TString label, float dm, float maxHeight, bool above){
-  lines.push_back(dm_line(label, dm, maxHeight, above));
-}
-
-dm_line::dm_line(TString ilabel, float idm, float imaxHeight, bool iabove):
-  label(ilabel),
-  dm(idm),
-  maxHeight(imaxHeight),
-  above(iabove){
-  }
