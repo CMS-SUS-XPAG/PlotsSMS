@@ -76,7 +76,7 @@ int main(){
   TString energy=""; // " (13 TeV)"; // Used when there are 8 and 13 TeV results
 
 
-  ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
+  ///////////////////////////////    Defining EWKino only plot   //////////////////////////////
   models.push_back(model_limits("EWKino","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
   models.back().lumi = "35.9"; models.back().reverseOrder = false;
   models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 250);
@@ -86,7 +86,7 @@ int main(){
   models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
   		    cwh, "gr_obs", "gr_exp", 124.5);
   models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
-  		    cwh43, "graph_smoothed_Obs", "graph_smoothed_Exp", 124.5);
+  		    cwh43, "massplane_obs", "contourplot", 124.5);
   models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
   		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
   models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
@@ -152,6 +152,29 @@ int main(){
   		    cwz39, "gr_obs", "gr_exp", 7);
   models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
    		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+
+  ///////////////////////////////    Defining Sleptons plot    /////////////////////////////////
+  models.push_back(model_limits("Sleptons","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.91));
+  models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 590);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 590);
+
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf1_x0p5_gr.root", 
+  		    c10050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf1_x0p05_gr.root", 
+  		    c10005, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 3l ("+tauRich+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf1_x0p95_gr.root", 
+  		    c10095, "gr_obs_smoothed", "gr_exp_smoothed");
+
+  models.back().add("SUS-16-039, 3l ("+flavDem+", "+xl+"=0.5)", folder+"ewkino_sus16_039_bf0p5_x0p5_gr.root", 
+  		    c5050, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.05)",folder+"ewkino_sus16_039_bf0p5_x0p05_gr.root", 
+  		    c5005, "gr_obs_smoothed", "gr_exp_smoothed");
+  models.back().add("SUS-16-039, 2l SS + 3l ("+flavDem+", "+xl+"=0.95)",folder+"ewkino_sus16_039_bf0p5_x0p95_gr.root", 
+  		    c5095, "gr_obs_smoothed", "gr_exp_smoothed");
+
+  models.back().add("SUS-16-039, 3l ("+tauDom+", "+xl+"=0.5)",folder+"ewkino_sus16_039_bftau_x0p5_gr.root", 
+  		    ctau50, "gr_obs_smoothed", "gr_exp_smoothed");
 
   ///////////////////////////////    Defining T1tttt plot    /////////////////////////////////
   models.push_back(model_limits("T1tttt", basetitle+"t#kern[0.4]{#bar{t}}#kern[0.4]{"+lsp+"}"));
@@ -349,6 +372,12 @@ int main(){
 
 TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   TString xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
+  if(model.Contains("Sleptons")){
+    Xmin = 100; Xmax = 1250;
+    Ymin = 0;   Ymax = 1350;
+    glu_lsp = 25;
+    xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
+  }
   if(model.Contains("EWK-slep")){
     Xmin = 100; Xmax = 1250;
     Ymin = 0;   Ymax = 1570;

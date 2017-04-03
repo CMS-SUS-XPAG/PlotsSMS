@@ -1,8 +1,16 @@
 #include "utilities.hpp"
 #include "TMultiGraph.h"
 #include "TLatex.h"
+#include "TH2F.h"
+#include "TGraph2D.h"
 
 using namespace std;
+
+int GetNumBins(const vector<double> &pts, double width){
+  double pmin = *min_element(pts.cbegin(), pts.cend());
+  double pmax = *max_element(pts.cbegin(), pts.cend());
+  return max(1, min(500, static_cast<int>(ceil((pmax-pmin)/width))));
+}
 
 TGraph* getGraph(TFile &flimit, TString gname){
   if(gname == "noplot") return 0;
@@ -12,6 +20,42 @@ TGraph* getGraph(TFile &flimit, TString gname){
     TList *list = mgraph->GetListOfGraphs();
     TIter liter(list);
     return static_cast<TGraph*>(liter());
+  }
+  if(graph->InheritsFrom(TH1::Class())){
+    TH2F *hobs = static_cast<TH2F*>(flimit.Get(gname));
+    //hobs->Smooth();
+    vector<double> vx, vy, vz;
+    for(int binx=1; binx<=hobs->GetNbinsX(); ++binx){
+      double x = hobs->GetXaxis()->GetBinCenter(binx);
+      for(int biny=1; biny<=hobs->GetNbinsY(); ++biny){
+	double y = hobs->GetYaxis()->GetBinCenter(biny);
+	double z = hobs->GetBinContent(hobs->GetBin(binx,biny));
+	vx.push_back(x);
+	vy.push_back(y);
+        vz.push_back(z);
+      }
+    }
+    
+    TGraph2D gsmooth("gsmooth", "", vx.size(), &vx.at(0), &vy.at(0), &vz.at(0));
+    gsmooth.SetNpx(GetNumBins(vx, 1));
+    gsmooth.SetNpy(GetNumBins(vy, 1));
+    gsmooth.GetHistogram();
+    TList *list = gsmooth.GetContourList(1.);
+    TIter liter(list);
+    cout<<endl<<"Finding "<<gname<<endl;
+    int max_points = 991;
+    for(int i = 0; i < list->GetSize(); ++i){
+      TGraph *g = static_cast<TGraph*>(list->At(i));
+      if(g == nullptr) continue;
+      int n_points = g->GetN();
+      cout<<"Contour with "<<n_points<<" points "<<endl;
+      if(n_points < max_points){
+        graph = g;
+        max_points = n_points;
+      }
+    }
+
+    return static_cast<TGraph*>(graph);
   }
 
   // If the TGraph is not directly provided in the root file, try to extract it from a TCanvas
@@ -55,6 +99,7 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   // Printing all points before modifications
   if(debug){
     cout<<endl<<endl;
+    cout<<"Drawing "<<graph->GetName()<<endl;
     for(int point(0); point < graph->GetN(); point++){
       graph->GetPoint(point, mglu, mlsp);
       cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
