@@ -234,7 +234,7 @@ class smsPlotABS(object):
         self.c.LExpP = LExpP
 
     def DrawDiagonal(self):
-        diagonal = rt.TGraph(2, array('d',[self.model.Xmin,self.model.Xmax]), array('d',[self.model.Xmin,self.model.Xmax]))
+        diagonal = rt.TGraph(2, array('d',[self.model.Xmin,self.model.Xmax]), array('d',[self.model.Xmin-175,self.model.Xmax-175]))
         diagonal.SetName("diagonal")
         diagonal.SetFillColor(rt.kWhite)
         diagonal.SetLineColor(rt.kGray)
@@ -275,5 +275,31 @@ class smsPlotABS(object):
         self.OBS['nominal'].Draw("LSAME")
         self.OBS['plus'].Draw("LSAME")
         self.OBS['minus'].Draw("LSAME")        
-
         
+    def DrawCorridor(self):
+        ## Moriond Recommendation for T2tt.
+        ## Blank out the diagonal delimited by these four points: 
+        ## (262.5,112.5) (287.5,87.5) (200,0) (150,0) 
+
+        ## lower left corner
+        x1 = self.model.Xmin ## = 150
+        y1 = self.model.Ymin ## = 0  
+
+        ## lower right corner
+        x2 = self.model.Xmin+50. ## = 200
+        y2 = self.model.Ymin     ## = 0  
+        
+        ## upper right corner
+        x3 = self.model.Xmin+137.5 ## = 287.5
+        y3 = self.model.Ymin+87.5  ## = 87.5
+
+        ## upper left corner
+        x4 = self.model.Xmin+112.5 ## = 262.5
+        y4 = self.model.Ymin+112.5 ## = 112.5
+
+        whitebox = rt.TGraph(4, array('d',[x1,x2,x3,x4]), array('d',[y1,y2,y3,y4]))
+
+        whitebox.SetName("whitebox")
+        whitebox.SetFillColor(rt.kWhite)
+        whitebox.Draw("FSAME")
+        self.c.whitebox = whitebox
