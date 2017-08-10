@@ -24,6 +24,7 @@
 
 using namespace std;
 namespace{
+  bool do_prelim = false;
   bool no_shade = true;
   bool debug = false;
 
@@ -44,6 +45,9 @@ namespace{
   TString flavDem = chipm+chi2+"#rightarrowl#tilde{#nu}l#tilde{l}, BF(ll)=0.5";
   TString tauRich = chipm+chi2+"#rightarrow#tilde{#tau}#nul#tilde{l}";
   TString tauDom  = chipm+chi2+"#rightarrow#tilde{#tau}#nu#tau#tilde{#tau}";
+
+  TString WZdecay = "BF("+chi2+"#rightarrowZ#kern[0.3]{"+lsp+"})";
+  TString WHdecay = "BF("+chi2+"#rightarrowH#kern[0.3]{"+lsp+"})";
 
   int cBenchmark(no_shade?kGray+2:1);
   int cSus16033(kBlue), cSus16036(kGreen+1), cSus16016(kGreen+1);
@@ -76,6 +80,31 @@ int main(){
   TString energy=""; // " (13 TeV)"; // Used when there are 8 and 13 TeV results
 
 
+  // ///////////////////////////////    Defining WH only plot   //////////////////////////////
+  // models.push_back(model_limits("WH","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
+  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 120);
+
+  // models.back().add("SUS-16-039, 2l SS + #geq3l (WH)", folder+"ewkino_sus16_039_wh_gr.root", 
+  // 		    cwh, "gr_obs", "gr_exp", 124.5);
+  // models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
+  // 		    cwh43, "massplane_obs", "contourplot", 124.5);
+  // models.back().add("SUS-16-045, H#rightarrow#gamma#gamma (WH)", folder+"ewkino_sus16_045_wh.root", 
+  //  		    kOrange, "obs", "exp", 124.5);
+
+  // ///////////////////////////////    Defining WZ only plot   //////////////////////////////
+  // models.push_back(model_limits("WZ","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
+  // models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 250);
+  // models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 250);
+
+  // models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
+  // 		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
+  // models.back().add("This result, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
+  // 		    cwz39, "gr_obs", "gr_exp", 7);
+  // models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
+  //  		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+
   ///////////////////////////////    Defining EWKino only plot   //////////////////////////////
   models.push_back(model_limits("EWKino","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}"));
   models.back().lumi = "35.9"; models.back().reverseOrder = false;
@@ -87,12 +116,36 @@ int main(){
   		    cwh, "gr_obs", "gr_exp", 124.5);
   models.back().add("SUS-16-043, 1l (WH)", folder+"ewkino_sus16_043_wh.root", 
   		    cwh43, "massplane_obs", "contourplot", 124.5);
+  models.back().add("SUS-16-045, H#rightarrow#gamma#gamma (WH)", folder+"ewkino_sus16_045_wh.root", 
+   		    kOrange, "obs", "exp", 124.5);
   models.back().add("SUS-16-034, 2l OS (WZ)", folder+"ewkino_sus16_034_wz.root", 
   		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
-  models.back().add("SUS-16-039, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
+  models.back().add("This result, 3l (WZ)", folder+"ewkino_sus16_039_wz_gr.root", 
   		    cwz39, "gr_obs", "gr_exp", 7);
   models.back().add("SUS-16-048, soft 2-lep (WZ)", folder+"ewkino_sus16_048_wz.root", 
    		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
+
+  ///////////////////////////////    Defining EWK combination plot   //////////////////////////////
+  models.push_back(model_limits("EWKComb","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.9)); 
+  models.back().lumi = "35.9"; models.back().reverseOrder = false;
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}", 0, 290);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{Z}", 91, 290);
+  models.back().addLine("m_{"+chipm+"} = m_{"+lsp+"}+m_{H}", 125, 290);
+  models.back().setRanges(125, 700, 0, 430);
+
+  // models.back().add("SUS-17-004, comb. (WH)", folder+"ewkino_sus17_004_wh.root", 
+  // 		    cwh43, "gr_obs", "gr_exp", 124.5);
+  // models.back().add("SUS-17-004, comb. (WZ)", folder+"ewkino_sus17_004_wz.root", 
+  // 		    cwz39, "gr_obs", "gr_exp", 25);
+  // models.back().add("SUS-17-004, comb. (0.5#timesWH+0.5#timesWZ)", folder+"ewkino_sus17_004_wzmix.root", 
+  // 		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 124.5);
+
+  models.back().add(WHdecay+" = 1 (WH)", folder+"ewkino_sus17_004_wh.root", 
+  		    cwh43, "gr_obs", "gr_exp", 124.5);
+  models.back().add(WZdecay+" = 1 (WZ)", folder+"ewkino_sus17_004_wz.root", 
+  		    cwz39, "gr_obs", "gr_exp", 7);
+  models.back().add(WZdecay+" = "+WHdecay+" = 0.5 (WH+WZ)", folder+"ewkino_sus17_004_wzmix.root", 
+  		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 124.5);
 
   ///////////////////////////////    Defining EWK-slep plot    /////////////////////////////////
   models.push_back(model_limits("EWK-slep-0p5","pp #rightarrow "+chi2+"#kern[0.3]{"+chipm+"}", 0.9));
@@ -279,6 +332,8 @@ int main(){
     //// Creating base histogram and drawing lumi labels
     float Xmin(700), Xmax(1750), Ymin(0), Ymax(1800), glu_lsp;
     TString xtitle = getModelParams(mod.model, Xmin, Xmax, Ymin, Ymax, glu_lsp);
+    if(mod.Xmin != -99) Xmin = mod.Xmin; if(mod.Xmax != -99) Xmax = mod.Xmax;
+    if(mod.Ymin != -99) Ymin = mod.Ymin; if(mod.Ymax != -99) Ymax = mod.Ymax;
 
     TH2D hbase = baseHistogram(Xmin, Xmax, Ymin, Ymax, xtitle);
     hbase.Draw();
@@ -372,6 +427,7 @@ int main(){
 
 TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, float &Ymax, float &glu_lsp){
   TString xtitle = "m#kern[0.12]{_{#lower[-0.12]{#tilde{g}}}}";
+  glu_lsp = 25; xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   if(model.Contains("Sleptons")){
     Xmin = 100; Xmax = 1250;
     Ymin = 0;   Ymax = 1350;
@@ -392,7 +448,19 @@ TString getModelParams(TString model, float &Xmin, float &Xmax, float &Ymin, flo
   }
   if(model == "EWKino"){
     Xmin = 100; Xmax = 650;
-    Ymin = 0;   Ymax = 430;
+    Ymin = 0;   Ymax = 470;
+    glu_lsp = 25;
+    xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
+  }
+  if(model == "WZ"){
+    Xmin = 100; Xmax = 650;
+    Ymin = 0;   Ymax = 390;
+    glu_lsp = 25;
+    xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
+  }
+  if(model == "WH"){
+    Xmin = 120; Xmax = 550;
+    Ymin = 0;   Ymax = 190;
     glu_lsp = 25;
     xtitle = "m_{"+chi2+"} = m_{"+chipm+"}";
   }
@@ -431,15 +499,15 @@ void addLabelsTitle(float lMargin, float tMargin, float rMargin, TString title, 
   label.SetTextAlign(11); label.SetTextFont(61); label.SetTextSize(0.75*tMargin);
   label.DrawLatex(lMargin+offsetx, ycms, "CMS");
   label.SetTextAlign(11); label.SetTextFont(52); label.SetTextSize(0.038);
+  //if(do_prelim) label.DrawLatex(0.27+offsetx, ycms, "Preliminary");
   label.DrawLatex(0.27+offsetx, ycms, "Preliminary");
-
 
   // Printing top title
   label.SetTextAlign(22); label.SetTextFont(42); label.SetTextSize(0.6*tMargin);
   label.DrawLatex((1-rMargin-lMargin)/2.+lMargin-0.05, 1-tMargin/2., title);
   // Printing date
   label.SetTextAlign(31); label.SetTextFont(52); label.SetTextSize(0.45*tMargin);
-  label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "Moriond 2017");
+  if(do_prelim) label.DrawLatex(1-rMargin-0.02, 1-tMargin+0.018, "Moriond 2017");
   // Printing energy
   label.SetTextAlign(31); label.SetTextFont(42); label.SetTextSize(0.53*tMargin);
   if(lumi=="") lumi = "13 TeV";

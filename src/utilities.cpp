@@ -15,6 +15,7 @@ int GetNumBins(const vector<double> &pts, double width){
 TGraph* getGraph(TFile &flimit, TString gname){
   if(gname == "noplot") return 0;
   TGraph *graph = static_cast<TGraph*>(flimit.Get(gname));
+  //cout<<endl<<"Finding "<<gname<<" which is graph: "<<graph->InheritsFrom(TGraph::Class())<<endl;
   if(graph->InheritsFrom(TMultiGraph::Class())){
     TMultiGraph *mgraph = static_cast<TMultiGraph*>(flimit.Get(gname));
     TList *list = mgraph->GetListOfGraphs();
@@ -42,7 +43,7 @@ TGraph* getGraph(TFile &flimit, TString gname){
     gsmooth.GetHistogram();
     TList *list = gsmooth.GetContourList(1.);
     TIter liter(list);
-    cout<<endl<<"Finding "<<gname<<endl;
+    cout<<endl<<"Finding "<<gname<<" with "<<list->GetSize()<<" contours"<<endl;
     int max_points = 991;
     for(int i = 0; i < list->GetSize(); ++i){
       TGraph *g = static_cast<TGraph*>(list->At(i));
@@ -91,28 +92,23 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   // }
   graph->SetFillColorAlpha(fillcolor, 0);
   graph->SetFillStyle(1001);
+  graph->SetFillStyle(0);
   graph->SetLineWidth(width); 
 
   int np(graph->GetN());
   double mglu, iniglu, endglu, mlsp, inilsp, endlsp;
 
   // Printing all points before modifications
-  if(debug){
-    cout<<endl<<endl;
-    cout<<"Drawing "<<graph->GetName()<<endl;
-    for(int point(0); point < graph->GetN(); point++){
-      graph->GetPoint(point, mglu, mlsp);
-      cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
-    }
-  }
+  if(debug && style==1) printGraph(graph, "before modifications");
 
   // The EWKino-WZ graph had a jump. Fix it
   makeContinuousGraph(graph);
+  if(debug && style==1) printGraph(graph, "after making it continuous");
 
   graph->GetPoint(0, iniglu, inilsp);
   graph->GetPoint(np-1, endglu, endlsp);
   // Reversing graph if printed towards decreasing mgluino
-  if(inilsp < endlsp) {
+  if(inilsp < endlsp || (inilsp==endlsp && iniglu>endglu)) {
     reverseGraph(graph);
     endglu = iniglu;
     endlsp = inilsp;
@@ -125,13 +121,7 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
 
   reverseGraph(graph);
 
-  if(debug){
-    cout<<endl<<endl;
-    for(int point(0); point < graph->GetN(); point++){
-      graph->GetPoint(point, mglu, mlsp);
-      if(style==1) cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
-    }
-  }
+  if(debug && style==1) printGraph(graph, "after reversing it and adding point to go down to mLSP = 0");
 
   // Adding a point at mLSP = 0, and removing points beyond the diagonal
   for(int point(0); point < np; point++){
@@ -160,6 +150,17 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   if(x1 == x2 || y1 == y2 || slope == 1){
     // cout<<"Slope is one"<<endl;
   }
+  if(debug && style==1) printGraph(graph, "as is returned to main function");
+}
+
+void printGraph(TGraph *graph, TString comment){
+  double mglu, mlsp;
+  cout<<endl<<"Drawing "<<graph->GetName()<<" "<<comment<<endl;
+  for(int point(0); point < graph->GetN(); point++){
+    graph->GetPoint(point, mglu, mlsp);
+    cout<<point<<": "<<setw(7)<<mglu<<", "<<mlsp<<endl;
+  }
+  cout<<endl;
 }
 
 void makeContinuousGraph(TGraph *graph){
@@ -193,6 +194,26 @@ void changeDmCoordinates(TGraph *graph){
     graph->SetPoint(point, mglu, mglu-mlsp);
   }
 }
+
+TGraph* joinGraphs(TGraph *graph1, TGraph *graph2){
+  TGraph *graph = new TGraph;
+  double mglu, mlsp;
+  for(int point(0); point < graph1->GetN(); point++) {
+    graph1->GetPoint(point, mglu, mlsp);
+    graph->SetPoint(graph->GetN(), mglu, mlsp);
+  } // Points in graph1
+  for(int point(0); point < graph2->GetN(); point++) {
+    graph2->GetPoint(point, mglu, mlsp);
+    graph->SetPoint(graph->GetN(), mglu, mlsp);
+  } // Points in graph1
+  graph1->GetPoint(0, mglu, mlsp);
+  graph->SetPoint(graph->GetN(), mglu, mlsp);
+  TString gname = graph1->GetName(); gname += graph2->GetName();
+  graph->SetName(gname);
+
+  return graph;
+}
+
 
 void reverseGraph(TGraph *graph){
   int np(graph->GetN());
@@ -283,4 +304,18 @@ TH2D baseHistogram(float Xmin, float Xmax, float Ymin, float Ymax, TString xtitl
   hbase.GetYaxis()->SetTitle("m#kern[0.12]{_{"+lsp+"}} [GeV]");
   return hbase;
 }
+string execute(const string &cmd){
+  FILE *pipe = popen(cmd.c_str(), "r");
+  if(!pipe) throw runtime_error("Could not open pipe.");
+  const size_t buffer_size = 128;
+  char buffer[buffer_size];
+  string result = "";
+  while(!feof(pipe)){
+    if(fgets(buffer, buffer_size, pipe) != NULL) result += buffer;
+  }
+
+  pclose(pipe);
+  return result;
+}
+
 

@@ -19,9 +19,11 @@ void setGraphStyle(TGraph *graph, int color, int style, int width, double glu_ls
 TGraph* joinGraphs(TGraph *graph1, TGraph *graph2);
 void reverseGraph(TGraph *graph);
 void changeDmCoordinates(TGraph *graph);
+void printGraph(TGraph *graph, TString comment="");
 void makeContinuousGraph(TGraph *graph);
 void printExclGlu(TGraph *gobs, TGraph *gexp, std::vector<float> &mLSPs, TString label);
 std::vector<float> intersectionLSP(TGraph *graph, std::vector<float> &mLSPs);
+std::string execute(const std::string &cmd);
 
 
 #endif

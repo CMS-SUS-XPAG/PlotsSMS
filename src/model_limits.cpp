@@ -15,7 +15,11 @@ model_limits::model_limits(TString imodel, TString ititle, float ilegScale):
   model(imodel),
   title(ititle),
   lumi(""),
-  legScale(ilegScale){
+  legScale(ilegScale),
+  Xmin(-99),
+  Xmax(-99),
+  Ymin(-99),
+  Ymax(-99){
   labMass = "";
   reverseOrder = true;
   }
@@ -30,3 +34,11 @@ dm_line::dm_line(TString ilabel, float idm, float imaxHeight, bool iabove):
   maxHeight(imaxHeight),
   above(iabove){
   }
+
+void model_limits::setRanges(float iXmin, float iXmax, float iYmin, float iYmax){
+  Xmin = iXmin;
+  Xmax = iXmax;
+  Ymin = iYmin;
+  Ymax = iYmax;
+}
+

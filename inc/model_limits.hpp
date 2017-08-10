@@ -27,9 +27,11 @@ public:
   std::vector<int> colors;
   std::vector<float> glu_lsps;
   std::vector<dm_line> lines;
-  
+  float Xmin, Xmax, Ymin, Ymax;
+
   void add(TString label, TString file, int color, TString obsname, TString expname, float glu_lsp=-1.);
   void addLine(TString ilabel, float idm, float imaxHeight, bool above=true);
+  void setRanges(float iXmin, float iXmax, float iYmin, float iYmax);
   model_limits(TString imodel, TString ititle, float ilegScale=1.);
 };
 
