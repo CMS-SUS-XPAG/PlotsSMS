@@ -3,6 +3,8 @@
 #include "TLatex.h"
 #include "TH2F.h"
 #include "TGraph2D.h"
+#include "TObjArray.h"
+#include "TROOT.h"
 
 using namespace std;
 
@@ -24,39 +26,25 @@ TGraph* getGraph(TFile &flimit, TString gname){
   }
   if(graph->InheritsFrom(TH1::Class())){
     TH2F *hobs = static_cast<TH2F*>(flimit.Get(gname));
-    //hobs->Smooth();
-    vector<double> vx, vy, vz;
-    for(int binx=1; binx<=hobs->GetNbinsX(); ++binx){
-      double x = hobs->GetXaxis()->GetBinCenter(binx);
-      for(int biny=1; biny<=hobs->GetNbinsY(); ++biny){
-	double y = hobs->GetYaxis()->GetBinCenter(biny);
-	double z = hobs->GetBinContent(hobs->GetBin(binx,biny));
-	vx.push_back(x);
-	vy.push_back(y);
-        vz.push_back(z);
-      }
-    }
-    
-    TGraph2D gsmooth("gsmooth", "", vx.size(), &vx.at(0), &vy.at(0), &vz.at(0));
-    gsmooth.SetNpx(GetNumBins(vx, 1));
-    gsmooth.SetNpy(GetNumBins(vy, 1));
-    gsmooth.GetHistogram();
-    TList *list = gsmooth.GetContourList(1.);
-    TIter liter(list);
-    cout<<endl<<"Finding "<<gname<<" with "<<list->GetSize()<<" contours"<<endl;
-    int max_points = 991;
-    for(int i = 0; i < list->GetSize(); ++i){
-      TGraph *g = static_cast<TGraph*>(list->At(i));
-      if(g == nullptr) continue;
-      int n_points = g->GetN();
-      cout<<"Contour with "<<n_points<<" points "<<endl;
-      if(n_points < max_points){
-        graph = g;
-        max_points = n_points;
-      }
-    }
 
-    return static_cast<TGraph*>(graph);
+    // Getting contours from TH2D (taken from ContourList.C)
+    TCanvas can;
+    Double_t contours[1];
+    contours[0] = 1.;
+    hobs->SetContour(1, contours);
+    hobs->Draw("CONT Z LIST");
+    can.Update(); // Needed to force the plotting and retrieve the contours in TGraphs
+    TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+    TList* contLevel = NULL;
+    TGraph* curv     = NULL;
+    TGraph* gc       = NULL;
+    if (conts != NULL) {
+      contLevel = (TList*)conts->At(0);
+      cout<<"Found "<<conts->GetSize()<<" contours and first has "<< contLevel->GetSize()<<" graphs"<<endl;
+      curv = (TGraph*)contLevel->At(1);
+      gc = (TGraph*)curv->Clone();
+    }
+    return gc;
   }
 
   // If the TGraph is not directly provided in the root file, try to extract it from a TCanvas
@@ -122,7 +110,7 @@ void setGraphStyle(TGraph* graph, int color, int style, int width, double glu_ls
   reverseGraph(graph);
 
   if(debug && style==1) printGraph(graph, "after reversing it and adding point to go down to mLSP = 0");
-
+  
   // Adding a point at mLSP = 0, and removing points beyond the diagonal
   for(int point(0); point < np; point++){
     graph->GetPoint(point, mglu, mlsp);

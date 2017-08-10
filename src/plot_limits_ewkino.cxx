@@ -79,8 +79,8 @@ int main(){
 
   models.back().add("\\text{SUS-16-039, }\\geq3\\ell\\text{ (WH)}", folder+"ewkino_sus16_039_wh_gr.root", 
   		    cwh, "gr_obs", "gr_exp", 124.5);
-  models.back().add("\\text{SUS-16-043, }1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh.root", 
-  		    cwh43, "massplane_obs", "contourplot", 124.5);
+  models.back().add("\\text{SUS-16-043, }1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh_aux.root", 
+  		    cwh43, "gObs", "gExp", 124.5);
   models.back().add("\\text{SUS-16-045, }H\\rightarrow\\gamma\\gamma\\text{ (WH)}", folder+"ewkino_sus16_045_wh.root", 
    		    kOrange, "obs", "exp", 124.5);
   models.back().add("\\text{SUS-16-034, }2\\ell\\text{ on-Z (WZ)}", folder+"ewkino_sus16_034_wz.root", 
@@ -100,8 +100,8 @@ int main(){
 
   models.back().add("\\text{SUS-16-039, }\\geq3\\ell\\text{ (WH)}", folder+"ewkino_sus16_039_wh_gr.root", 
   		    cwh, "gr_obs", "gr_exp", 124.5);
-  models.back().add("\\text{SUS-16-043, }1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh.root", 
-  		    cwh43, "massplane_obs", "contourplot", 124.5);
+  models.back().add("\\text{SUS-16-043, }1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh_aux.root", 
+  		    cwh43, "gObs", "gExp", 124.5);
   models.back().add("\\text{SUS-16-045, }H\\rightarrow\\gamma\\gamma\\text{ (WH)}", folder+"ewkino_sus16_045_wh.root", 
    		    kOrange, "obs", "exp", 124.5);
   models.back().add("\\text{SUS-16-034, }2\\ell\\text{ on-Z (WZ)}", folder+"ewkino_sus16_034_wz.root", 
@@ -123,8 +123,8 @@ int main(){
   		    cwh, "gr_obs", "gr_exp", 124.5);
   models.back().add("2\\ell\\text{ on-Z (WZ)}", folder+"ewkino_sus16_034_wz.root", 
   		    cwz34, "gr_obs_smoothed", "gr_exp_smoothed", 9999);
-  models.back().add("1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh.root", 
-  		    cwh43, "massplane_obs", "contourplot", 124.5);
+  models.back().add("1\\ell\\text{ 2b (WH)}", folder+"ewkino_sus16_043_wh_aux.root", 
+  		    cwh43, "gObs", "gExp", 124.5);
   models.back().add("2\\ell\\text{ soft (WZ)}", folder+"ewkino_sus16_048_wz.root", 
    		    cwz48, "ex_obs_smoothed_graph", "ex_exp_smoothed_graph", 7);
   models.back().add("H\\rightarrow\\gamma\\gamma\\text{ (WH)}", folder+"ewkino_sus16_045_wh.root", 
@@ -284,6 +284,7 @@ int main(){
     can.SaveAs(plotname);
     TString command = "pstopdf "+plotname+" "+plotname.ReplaceAll(".eps",".pdf");
     execute(command.Data());
+    execute("rm *.eps");
     
     cout<<" open "<<plotname<<endl<<endl;
   } // Loop over models
